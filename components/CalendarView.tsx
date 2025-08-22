@@ -123,7 +123,7 @@ const MonthView: React.FC<MonthViewProps> = ({ currentDate, daysInMonth, eventsB
                             const bgColor = getEventColor(event, profile);
                             return (
                                 <div key={event.id} onClick={(e) => { e.stopPropagation(); onEventClick(event); }} className="text-xs p-1.5 rounded text-white truncate cursor-pointer" style={{ backgroundColor: bgColor }}>
-                                    {event.image && <img src={event.image} alt={event.projectName} className="h-4 w-full object-cover rounded-sm mb-1"/>}
+                                    {event.image && <img src={event.image} alt={event.projectName} className="h-4 w-full object-cover rounded-sm mb-1" loading="lazy" decoding="async" />}
                                     <p className="font-semibold truncate">{event.projectName}</p>
                                 </div>
                             )
@@ -194,7 +194,7 @@ const EventPanel: React.FC<EventPanelProps> = ({ isOpen, mode, selectedEvent, ev
         <div className="overflow-y-auto flex-1">
             {mode === 'detail' && selectedEvent ? (
                 <div className="flex-1 flex flex-col">
-                    {selectedEvent.image && <img src={selectedEvent.image} alt={selectedEvent.projectName} className="w-full h-48 object-cover" />}
+                    {selectedEvent.image && <img src={selectedEvent.image} alt={selectedEvent.projectName} className="w-full h-48 object-cover" loading="lazy" decoding="async" />}
                     <div className="p-6 flex-1">
                         <h3 className="text-xl font-semibold text-brand-text-light">{selectedEvent.projectName}</h3>
                         <span className="text-xs font-medium px-2 py-0.5 rounded-full mt-2 inline-block" style={{ backgroundColor: `${getEventColor(selectedEvent, profile)}30`, color: getEventColor(selectedEvent, profile) }}>{selectedEvent.projectType}</span>

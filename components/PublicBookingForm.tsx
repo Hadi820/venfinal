@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Client, Project, Package, AddOn, Transaction, Profile, Card, FinancialPocket, ClientStatus, PaymentStatus, TransactionType, PromoCode, Lead, LeadStatus, ContactChannel, ClientType } from '../types';
 import Modal from './Modal';
 import { MessageSquareIcon } from '../constants';
@@ -48,7 +48,7 @@ const initialFormState = {
 };
 
 const UploadIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
         <polyline points="17 8 12 3 7 8" />
         <line x1="12" y1="3" x2="12" y2="15" />
@@ -164,6 +164,8 @@ const PublicBookingForm: React.FC<PublicBookingFormProps> = ({
             setPaymentProof(file);
         }
     };
+
+    
     
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -192,7 +194,9 @@ const PublicBookingForm: React.FC<PublicBookingFormProps> = ({
         let dpProofUrl = '';
         if (paymentProof) {
             try {
+                console.debug('Converting paymentProof to base64, file:', paymentProof.name, paymentProof.type, paymentProof.size);
                 dpProofUrl = await toBase64(paymentProof);
+                console.debug('dpProofUrl length:', dpProofUrl ? dpProofUrl.length : 0);
             } catch (error) {
                 console.error("Error reading file:", error);
                 showNotification("Gagal memproses file bukti transfer.");
@@ -254,7 +258,19 @@ const PublicBookingForm: React.FC<PublicBookingFormProps> = ({
             discountAmount: discountAmount > 0 ? discountAmount : undefined,
             dpProofUrl: dpProofUrl || undefined,
         };
-        const newProject = await projectCrud.add(newProjectData);
+        let newProject: any;
+        try {
+            newProject = await projectCrud.add(newProjectData);
+            console.debug('Created project returned from projectCrud.add:', newProject && newProject.id ? newProject.id : newProject);
+            if (paymentProof && (!newProject || !newProject.dpProofUrl)) {
+                showNotification('Perhatian: bukti transfer tidak tersimpan pada server. Silakan cek kembali atau hubungi admin.');
+            }
+        } catch (err) {
+            console.error('Error creating project:', err);
+            showNotification('Gagal membuat proyek. Silakan coba lagi.');
+            setIsSubmitting(false);
+            return;
+        }
         
         const newLeadData = {
             name: newClient.name,
@@ -291,7 +307,7 @@ const PublicBookingForm: React.FC<PublicBookingFormProps> = ({
         });
 
         return (
-            <div className="printable-content bg-white text-black p-8 font-serif leading-relaxed text-sm max-h-[70vh] overflow-y-auto">
+            <div className="printable-content bg-white text-black p-4 sm:p-8 font-serif leading-relaxed text-sm max-h-[70vh] overflow-y-auto">
                 <h2 className="text-xl font-bold text-center mb-1">CONTOH SURAT PERJANJIAN KERJA SAMA</h2>
                 <h3 className="text-lg font-bold text-center mb-6">JASA FOTOGRAFI & VIDEOGRAFI</h3>
                 <p>Pada hari ini, {today}, telah dibuat dan disepakati perjanjian kerja sama antara:</p>
@@ -303,7 +319,7 @@ const PublicBookingForm: React.FC<PublicBookingFormProps> = ({
                             <tr><td className="pr-4 align-top">Nama</td><td>: {userProfile.authorizedSigner}</td></tr>
                             <tr><td className="pr-4 align-top">Jabatan</td><td>: Pemilik Usaha</td></tr>
                             <tr><td className="pr-4 align-top">Alamat</td><td>: {userProfile.address}</td></tr>
-                            <tr><td className="pr-4 align-top">Nomor Telepon</td><td>: {userProfile.phone}</td></tr>
+                            <tr><td className="pr-4 align-top">No. WhatsApp</td><td>: {userProfile.phone}</td></tr>
                         </tbody>
                     </table>
                     <p className="mt-1">Dalam hal ini bertindak atas nama perusahaannya, {userProfile.companyName}, selanjutnya disebut sebagai <strong>PIHAK PERTAMA</strong>.</p>
@@ -315,7 +331,7 @@ const PublicBookingForm: React.FC<PublicBookingFormProps> = ({
                         <tbody>
                             <tr><td className="pr-4 align-top">Nama</td><td>: [Nama Klien]</td></tr>
                             <tr><td className="pr-4 align-top">Alamat</td><td>: [Alamat Klien]</td></tr>
-                            <tr><td className="pr-4 align-top">Nomor Telepon</td><td>: [Nomor Telepon Klien]</td></tr>
+                            <tr><td className="pr-4 align-top">No. WhatsApp</td><td>: [No. WhatsApp Klien]</td></tr>
                         </tbody>
                     </table>
                     <p className="mt-1">Dalam hal ini bertindak atas nama pribadi, selanjutnya disebut sebagai <strong>PIHAK KEDUA</strong>.</p>
@@ -335,14 +351,14 @@ const PublicBookingForm: React.FC<PublicBookingFormProps> = ({
                 </div>
 
                  <div className="flex justify-between items-end mt-16">
-                    <div className="text-center w-2/5">
+                    <div className="text-center sm:w-2/5 w-full">
                         <p>PIHAK PERTAMA</p>
                         <div className="h-28 my-1 flex flex-col items-center justify-center text-gray-400 text-xs">
                             <span className="italic">(Tanda Tangan & Nama)</span>
                         </div>
                         <p className="border-t-2 border-dotted w-4/5 mx-auto pt-1">({userProfile.authorizedSigner})</p>
                     </div>
-                     <div className="text-center w-2/5">
+                     <div className="text-center sm:w-2/5 w-full">
                         <p>PIHAK KEDUA</p>
                         <div className="h-28 border-b-2 border-dotted w-4/5 mx-auto my-1 flex items-center justify-center text-gray-400 text-xs italic">(Tanda Tangan & Nama)</div>
                         <p>([Nama Klien])</p>
@@ -359,7 +375,19 @@ const PublicBookingForm: React.FC<PublicBookingFormProps> = ({
                 <div className="w-full max-w-lg p-8 text-center bg-brand-surface rounded-2xl shadow-lg border border-brand-border">
                     <h1 className="text-2xl font-bold text-gradient">Terima Kasih!</h1>
                     <p className="mt-4 text-brand-text-primary">Formulir pemesanan Anda telah berhasil kami terima. Tim kami akan segera menghubungi Anda untuk konfirmasi lebih lanjut.</p>
-                    <a href="#" className="mt-6 button-primary inline-block">Kembali ke Beranda</a>
+                    <div className="mt-6">
+                        <button type="button" onClick={() => {
+                            const adminPhone = cleanPhoneNumber(userProfile.phone || '');
+                            if (!adminPhone) {
+                                showNotification('Nomor admin tidak tersedia.');
+                                return;
+                            }
+                            const proceed = window.confirm('Anda akan menghubungi admin via WhatsApp. Lanjutkan?');
+                            if (!proceed) return;
+                            const text = encodeURIComponent(`Halo, saya ${formData.clientName || ''} telah mengisi formulir pemesanan untuk ${formData.projectType || ''} pada ${formData.date}. Mohon konfirmasi.`);
+                            window.open(`https://wa.me/${adminPhone}?text=${text}`, '_blank');
+                        }} className="w-full button-primary inline-block">Konfirmasi ke Admin via WhatsApp</button>
+                    </div>
                 </div>
             </div>
         );
@@ -375,28 +403,40 @@ const PublicBookingForm: React.FC<PublicBookingFormProps> = ({
                     </div>
 
                     <form className="space-y-4" onSubmit={handleSubmit}>
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-2">
+                        <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-x-8 gap-y-2">
                              <div className="space-y-4">
                                 <h4 className="text-base font-semibold text-gradient border-b border-brand-border pb-2">Informasi Klien</h4>
-                                <div className="input-group"><input type="text" id="clientName" name="clientName" value={formData.clientName} onChange={handleFormChange} className="input-field" placeholder=" " required/><label htmlFor="clientName" className="input-label">Nama Lengkap</label></div>
-                                <div className="input-group"><input type="tel" id="phone" name="phone" value={formData.phone} onChange={handleFormChange} className="input-field" placeholder=" " required/><label htmlFor="phone" className="input-label">Nomor Telepon (WhatsApp)</label></div>
-                                <div className="input-group"><input type="email" id="email" name="email" value={formData.email} onChange={handleFormChange} className="input-field" placeholder=" " required/><label htmlFor="email" className="input-label">Email</label></div>
+                                <div className="input-group"><input type="text" id="clientName" name="clientName" value={formData.clientName} onChange={handleFormChange} className="input-field" placeholder="" aria-describedby="clientNameHelp" required/><label htmlFor="clientName" className="input-label">Nama Lengkap</label><p id="clientNameHelp" className="input-help">Nama lengkap sesuai identitas.</p></div>
+                                <div className="input-group"><input type="tel" id="phone" name="phone" value={formData.phone} onChange={handleFormChange} className="input-field" placeholder="" aria-describedby="phoneHelp" required/><label htmlFor="phone" className="input-label">No. WhatsApp</label><p id="phoneHelp" className="input-help">Masukkan nomor aktif untuk konfirmasi via WhatsApp.</p></div>
+                                <div className="input-group"><input type="email" id="email" name="email" value={formData.email} onChange={handleFormChange} className="input-field" placeholder="" aria-describedby="emailHelp" /><label htmlFor="email" className="input-label">Email</label><p id="emailHelp" className="input-help">Opsional, tapi membantu untuk pengiriman konfirmasi.</p></div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="input-group"><select id="projectType" name="projectType" value={formData.projectType} onChange={handleFormChange} className="input-field" required><option value="" disabled>Pilih Jenis...</option>{userProfile.projectTypes.map(pt => <option key={pt} value={pt}>{pt}</option>)}</select><label htmlFor="projectType" className="input-label">Jenis Acara</label></div>
-                                    <div className="input-group"><input type="date" id="date" name="date" value={formData.date} onChange={handleFormChange} className="input-field" placeholder=" "/><label htmlFor="date" className="input-label">Tanggal Acara</label></div>
+                                    <div className="input-group"><input type="date" id="date" name="date" value={formData.date} onChange={handleFormChange} className="input-field" placeholder=""/><label htmlFor="date" className="input-label">Tanggal Acara</label></div>
                                 </div>
-                                <div className="input-group"><input type="text" id="location" name="location" value={formData.location} onChange={handleFormChange} className="input-field" placeholder=" "/><label htmlFor="location" className="input-label">Lokasi Acara</label></div>
+                                <div className="input-group"><label htmlFor="location" className="input-label">Lokasi Acara</label><input type="text" id="location" name="location" value={formData.location} onChange={handleFormChange} className="input-field" placeholder=""/></div>
                              </div>
 
                              <div className="space-y-4">
                                 <h4 className="text-base font-semibold text-gradient border-b border-brand-border pb-2">Detail Paket & Pembayaran</h4>
-                                <div className="input-group"><select id="packageId" name="packageId" value={formData.packageId} onChange={handleFormChange} className="input-field" required><option value="">Pilih paket...</option>{packages.map(p => <option key={p.id} value={p.id}>{p.name} - {formatCurrency(p.price)}</option>)}</select><label htmlFor="packageId" className="input-label">Paket</label></div>
-                                <div className="input-group"><label className="input-label !static !-top-4 !text-brand-accent">Add-On Lainnya (Opsional)</label><div className="p-3 border border-brand-border bg-brand-bg rounded-lg max-h-32 overflow-y-auto space-y-2 mt-2">{addOns.map(addon => (<label key={addon.id} className="flex items-center justify-between p-2 rounded-md hover:bg-brand-input cursor-pointer"><span className="text-sm text-brand-text-primary">{addon.name}</span><div className="flex items-center gap-4"><span className="text-sm text-brand-text-secondary">{formatCurrency(addon.price)}</span><input type="checkbox" id={addon.id} name="addOns" checked={formData.selectedAddOnIds.includes(addon.id)} onChange={handleFormChange} /></div></label>))}</div></div>
+                                    <div className="input-group"><select id="packageId" name="packageId" value={formData.packageId} onChange={handleFormChange} className="input-field" aria-describedby="packageHelp" required><option value="">Pilih paket...</option>{packages.map(p => <option key={p.id} value={p.id}>{p.name} - {formatCurrency(p.price)}</option>)}</select><label htmlFor="packageId" className="input-label">Paket</label><p id="packageHelp" className="input-help">Pilih paket yang sesuai; Anda dapat menambah add-on setelah memilih.</p></div>
+                                <div className="input-group"><label className="input-label text-brand-accent">Add-On Lainnya (Opsional)</label><div className="add-on-list p-3 border border-brand-border bg-brand-bg rounded-lg max-h-32 overflow-y-auto space-y-2 mt-2">{addOns.map(addon => (<label key={addon.id} className="flex items-center justify-between p-2 rounded-md hover:bg-brand-input cursor-pointer"><span className="text-sm text-brand-text-primary">{addon.name}</span><div className="flex items-center gap-4"><span className="text-sm text-brand-text-secondary">{formatCurrency(addon.price)}</span><input type="checkbox" id={addon.id} name="addOns" checked={formData.selectedAddOnIds.includes(addon.id)} onChange={handleFormChange} /></div></label>))}</div></div>
                                 
-                                <div className="input-group">
-                                    <input type="text" id="promoCode" name="promoCode" value={formData.promoCode} onChange={handleFormChange} className="input-field" placeholder=" " />
-                                    <label htmlFor="promoCode" className="input-label">Kode Promo (Opsional)</label>
-                                    {promoFeedback.message && <p className={`text-xs mt-1 ${promoFeedback.type === 'success' ? 'text-brand-success' : 'text-brand-danger'}`}>{promoFeedback.message}</p>}
+                                    <div className="input-group"><input
+                                        type="text"
+                                        id="promoCode"
+                                        name="promoCode"
+                                        value={formData.promoCode}
+                                        onChange={handleFormChange}
+                                        className="input-field"
+                                        placeholder=" "
+                                        aria-describedby={promoFeedback.message ? 'promoFeedback' : undefined}
+                                        aria-invalid={promoFeedback.type === 'error'}
+                                    /><label htmlFor="promoCode" className="input-label">Kode Promo (Opsional)</label>
+                                    {promoFeedback.message && (
+                                        <p id="promoFeedback" className={`input-help ${promoFeedback.type === 'success' ? 'text-brand-success' : 'text-brand-danger'}`}>
+                                            {promoFeedback.message}
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div className="p-4 bg-brand-bg rounded-lg space-y-3">
@@ -411,12 +451,12 @@ const PublicBookingForm: React.FC<PublicBookingFormProps> = ({
                                     <p className="text-sm text-brand-text-secondary">Silakan transfer Uang Muka (DP) ke rekening berikut:</p>
                                     <p className="font-semibold text-brand-text-light text-center py-2 bg-brand-input rounded-md">{userProfile.bankAccount}</p>
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div className="input-group !mt-2"><input type="number" name="dp" id="dp" value={formData.dp} onChange={handleFormChange} className="input-field text-right" placeholder=" "/><label htmlFor="dp" className="input-label">Jumlah DP Ditransfer</label></div>
-                                        <div className="input-group !mt-2"><input type="text" name="dpPaymentRef" id="dpPaymentRef" value={formData.dpPaymentRef} onChange={handleFormChange} className="input-field" placeholder=" "/><label htmlFor="dpPaymentRef" className="input-label">No. Ref / 4 Digit Rek</label></div>
+                                        <div className="input-group !mt-2"><input type="number" name="dp" id="dp" value={formData.dp} onChange={handleFormChange} className="input-field text-right" placeholder="" aria-describedby="dpHelp"/><label htmlFor="dp" className="input-label">Jumlah DP Ditransfer</label><p id="dpHelp" className="input-help">Isi jika sudah mentransfer DP. Gunakan angka tanpa pemisah.</p></div>
+                                        <div className="input-group !mt-2"><input type="text" name="dpPaymentRef" id="dpPaymentRef" value={formData.dpPaymentRef} onChange={handleFormChange} className="input-field" placeholder="" aria-describedby="dpRefHelp"/><label htmlFor="dpPaymentRef" className="input-label">No. Ref / 4 Digit Rek</label><p id="dpRefHelp" className="input-help">Masukkan 4 digit terakhir atau nomor referensi transfer.</p></div>
                                     </div>
-                                     <div className="input-group !mt-2">
-                                        <label htmlFor="dpPaymentProof" className="input-label !static !-top-4 !text-brand-accent">Bukti Transfer DP (Opsional)</label>
-                                        <div className="mt-2 flex justify-center rounded-lg border border-dashed border-brand-border px-6 py-10">
+                                                 <div className="input-group !mt-2">
+                                                     <label htmlFor="dpPaymentProof" className="input-label">Bukti Transfer DP (Opsional)</label>
+                                        <div className="mt-2 flex justify-center rounded-lg border border-dashed border-brand-border px-6 py-10 upload-area">
                                             <div className="text-center">
                                                 <UploadIcon className="mx-auto h-12 w-12 text-brand-text-secondary" />
                                                 <div className="mt-4 flex text-sm leading-6 text-brand-text-secondary">

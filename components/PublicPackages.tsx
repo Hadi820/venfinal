@@ -72,7 +72,7 @@ const PublicPackages: React.FC<PublicPackagesProps> = ({ packages, userProfile, 
         });
 
         return (
-            <div className="printable-content bg-white text-black p-8 font-serif leading-relaxed text-sm max-h-[70vh] overflow-y-auto">
+            <div className="printable-content bg-white text-black p-4 sm:p-8 font-serif leading-relaxed text-sm max-h-[70vh] overflow-y-auto">
                 <h2 className="text-xl font-bold text-center mb-1">CONTOH SURAT PERJANJIAN KERJA SAMA</h2>
                 <h3 className="text-lg font-bold text-center mb-6">JASA FOTOGRAFI & VIDEOGRAFI</h3>
                 <p>Pada hari ini, {today}, telah dibuat dan disepakati perjanjian kerja sama antara:</p>
@@ -84,7 +84,7 @@ const PublicPackages: React.FC<PublicPackagesProps> = ({ packages, userProfile, 
                             <tr><td className="pr-4 align-top">Nama</td><td>: {userProfile.authorizedSigner}</td></tr>
                             <tr><td className="pr-4 align-top">Jabatan</td><td>: Pemilik Usaha</td></tr>
                             <tr><td className="pr-4 align-top">Alamat</td><td>: {userProfile.address}</td></tr>
-                            <tr><td className="pr-4 align-top">Nomor Telepon</td><td>: {userProfile.phone}</td></tr>
+                            <tr><td className="pr-4 align-top">No. WhatsApp</td><td>: {userProfile.phone}</td></tr>
                         </tbody>
                     </table>
                     <p className="mt-1">Dalam hal ini bertindak atas nama perusahaannya, {userProfile.companyName}, selanjutnya disebut sebagai <strong>PIHAK PERTAMA</strong>.</p>
@@ -96,7 +96,7 @@ const PublicPackages: React.FC<PublicPackagesProps> = ({ packages, userProfile, 
                         <tbody>
                             <tr><td className="pr-4 align-top">Nama</td><td>: [Nama Klien]</td></tr>
                             <tr><td className="pr-4 align-top">Alamat</td><td>: [Alamat Klien]</td></tr>
-                            <tr><td className="pr-4 align-top">Nomor Telepon</td><td>: [Nomor Telepon Klien]</td></tr>
+                            <tr><td className="pr-4 align-top">No. WhatsApp</td><td>: [No. WhatsApp Klien]</td></tr>
                         </tbody>
                     </table>
                     <p className="mt-1">Dalam hal ini bertindak atas nama pribadi, selanjutnya disebut sebagai <strong>PIHAK KEDUA</strong>.</p>
@@ -116,14 +116,14 @@ const PublicPackages: React.FC<PublicPackagesProps> = ({ packages, userProfile, 
                 </div>
 
                  <div className="flex justify-between items-end mt-16">
-                    <div className="text-center w-2/5">
+                    <div className="text-center sm:w-2/5 w-full">
                         <p>PIHAK PERTAMA</p>
                         <div className="h-28 my-1 flex flex-col items-center justify-center text-gray-400 text-xs">
                             <span className="italic">(Tanda Tangan & Nama)</span>
                         </div>
                         <p className="border-t-2 border-dotted w-4/5 mx-auto pt-1">({userProfile.authorizedSigner})</p>
                     </div>
-                     <div className="text-center w-2/5">
+                     <div className="text-center sm:w-2/5 w-full">
                         <p>PIHAK KEDUA</p>
                         <div className="h-28 border-b-2 border-dotted w-4/5 mx-auto my-1 flex items-center justify-center text-gray-400 text-xs italic">(Tanda Tangan & Nama)</div>
                         <p>([Nama Klien])</p>

@@ -376,8 +376,9 @@ const Dashboard: React.FC<DashboardProps> = ({ projects, clients, transactions, 
     contracts: 'Daftar Semua Kontrak'
   };
   
-  return (
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+    return (
+            <div className="container">
+                <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         
         <div className="col-span-1 xl:col-span-12 grid grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="widget-animate cursor-pointer transition-transform duration-200 hover:scale-105" style={{ animationDelay: '100ms' }} onClick={() => setActiveModal('balance')}><StatCard icon={<DollarSignIcon className="w-6 h-6" />} iconBgColor="bg-blue-500/20" iconColor="text-blue-400" title="Total Saldo" value={formatCurrency(summary.totalBalance)} /></div>
@@ -502,7 +503,8 @@ const Dashboard: React.FC<DashboardProps> = ({ projects, clients, transactions, 
                     )}
                 </div>
             </Modal>
-    </div>
+                </div>
+            </div>
   );
 };
 

@@ -36,7 +36,7 @@ const StatCard: React.FC<StatCardProps> = ({
   );
 
   return (
-    <div className="bg-brand-surface p-6 rounded-2xl flex items-start gap-5 shadow-lg border border-brand-border">
+    <div className="card">
       <div className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center flex-shrink-0 ${iconBgColor} ${iconColor}`}>
         {icon}
       </div>

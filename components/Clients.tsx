@@ -134,17 +134,12 @@ const ClientForm: React.FC<ClientFormProps> = ({ formData, handleFormChange, han
                 {/* Left Column: Client & Project Info */}
                 <div className="space-y-4">
                     <h4 className="text-base font-semibold text-gradient border-b border-brand-border pb-2">Informasi Klien</h4>
-                    <div className="input-group"><input type="text" id="clientName" name="clientName" value={formData.clientName} onChange={handleFormChange} className="input-field" placeholder=" " required/><label htmlFor="clientName" className="input-label">Nama Klien</label></div>
-                    <div className="input-group">
-                        <select id="clientType" name="clientType" value={formData.clientType} onChange={handleFormChange} className="input-field" required>
-                            {Object.values(ClientType).map(ct => <option key={ct} value={ct}>{ct}</option>)}
-                        </select>
-                        <label htmlFor="clientType" className="input-label">Jenis Klien</label>
-                    </div>
-                    <div className="input-group"><input type="tel" id="phone" name="phone" value={formData.phone} onChange={handleFormChange} className="input-field" placeholder=" " required/><label htmlFor="phone" className="input-label">Nomor Telepon</label></div>
-                    <div className="input-group"><input type="tel" id="whatsapp" name="whatsapp" value={formData.whatsapp || ''} onChange={handleFormChange} className="input-field" placeholder=" "/><label htmlFor="whatsapp" className="input-label">No. WhatsApp</label></div>
-                    <div className="input-group"><input type="email" id="email" name="email" value={formData.email} onChange={handleFormChange} className="input-field" placeholder=" " required/><label htmlFor="email" className="input-label">Email</label></div>
-                    <div className="input-group"><input type="text" id="instagram" name="instagram" value={formData.instagram} onChange={handleFormChange} className="input-field" placeholder=" "/><label htmlFor="instagram" className="input-label">Instagram (@username)</label></div>
+                        <div className="input-group"><input id="name" name="name" value={formData.clientName} onChange={handleFormChange} className="input-field" placeholder=" " required/><label htmlFor="name" className="input-label">Nama</label></div>
+                        <div className="input-group"><select id="clientType" name="clientType" value={formData.clientType} onChange={handleFormChange} className="input-field" required>{Object.values(ClientType).map(ct => <option key={ct} value={ct}>{ct}</option>)}</select><label htmlFor="clientType" className="input-label">Jenis Klien</label></div>
+                        {/* Removed duplicate phone input - use WhatsApp as primary contact */}
+                        <div className="input-group"><input type="tel" id="whatsapp" name="whatsapp" value={formData.whatsapp || ''} onChange={handleFormChange} className="input-field" placeholder=" "/><label htmlFor="whatsapp" className="input-label">No. WhatsApp</label></div>
+                        <div className="input-group"><input type="email" id="email" name="email" value={formData.email} onChange={handleFormChange} className="input-field" placeholder=" " required/><label htmlFor="email" className="input-label">Email</label></div>
+                        <div className="input-group"><input type="text" id="instagram" name="instagram" value={formData.instagram} onChange={handleFormChange} className="input-field" placeholder=" "/><label htmlFor="instagram" className="input-label">Instagram (@username)</label></div>
                     
                     <h4 className="text-base font-semibold text-gradient border-b border-brand-border pb-2 pt-4">Informasi Proyek</h4>
                     <div className="input-group"><input type="text" id="projectName" name="projectName" value={formData.projectName} onChange={handleFormChange} className="input-field" placeholder=" " required/><label htmlFor="projectName" className="input-label">Nama Proyek</label></div>
@@ -314,7 +309,7 @@ const ClientDetailModal: React.FC<ClientDetailModalProps> = ({ client, projects,
                                     <tr className="border-b border-brand-border"><td className="py-2.5 text-brand-text-secondary w-1/3 sm:w-1/4">Nama Lengkap</td><td className="py-2.5 text-brand-text-light font-semibold">{client.name}</td></tr>
                                     <tr className="border-b border-brand-border"><td className="py-2.5 text-brand-text-secondary">Jenis Klien</td><td className="py-2.5 text-brand-text-light font-semibold">{client.clientType}</td></tr>
                                     <tr className="border-b border-brand-border"><td className="py-2.5 text-brand-text-secondary">Email</td><td className="py-2.5 text-brand-text-light font-semibold">{client.email}</td></tr>
-                                    <tr className="border-b border-brand-border"><td className="py-2.5 text-brand-text-secondary">Telepon</td><td className="py-2.5 text-brand-text-light font-semibold">{client.phone}</td></tr>
+                                    <tr className="border-b border-brand-border"><td className="py-2.5 text-brand-text-secondary">No. WhatsApp</td><td className="py-2.5 text-brand-text-light font-semibold">{client.phone}</td></tr>
                                     <tr className="border-b border-brand-border"><td className="py-2.5 text-brand-text-secondary">No. WhatsApp</td><td className="py-2.5 text-brand-text-light font-semibold">{client.whatsapp ? <a href={`https://wa.me/${cleanPhoneNumber(client.whatsapp)}`} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">{client.whatsapp}</a> : '-'}</td></tr>
                                     <tr className="border-b border-brand-border"><td className="py-2.5 text-brand-text-secondary">Instagram</td><td className="py-2.5 text-brand-text-light font-semibold">{client.instagram || '-'}</td></tr>
                                     <tr className="border-b border-brand-border"><td className="py-2.5 text-brand-text-secondary">Klien Sejak</td><td className="py-2.5 text-brand-text-light font-semibold">{new Date(client.since).toLocaleDateString('id-ID')}</td></tr>
@@ -833,7 +828,7 @@ const Clients: React.FC<ClientsProps> = ({ clients, clientCrud, projects, projec
     };
     
     const handleDownloadClients = () => {
-        const headers = ['Nama', 'Email', 'Telepon', 'Status', 'Total Nilai Proyek', 'Sisa Tagihan', 'Paket Terbaru'];
+    const headers = ['Nama', 'Email', 'No. WhatsApp', 'Status', 'Total Nilai Proyek', 'Sisa Tagihan', 'Paket Terbaru'];
         const data = filteredClientData.map(client => [
             `"${client.name.replace(/"/g, '""')}"`,
             client.email,
@@ -866,7 +861,7 @@ const Clients: React.FC<ClientsProps> = ({ clients, clientCrud, projects, projec
             return (
                 <div id="invoice-content" className="p-1">
                     <div className="printable-content bg-slate-50 font-sans text-slate-800 printable-area">
-                        <div className="max-w-4xl mx-auto bg-white p-8 sm:p-12 shadow-lg">
+                        <div className="max-w-full sm:max-w-6xl mx-auto bg-white p-4 sm:p-12 shadow-lg">
                             <header className="flex justify-between items-start mb-12">
                                 <div>
                                     <h1 className="text-3xl font-extrabold text-slate-900">{userProfile.companyName}</h1>
@@ -880,7 +875,7 @@ const Clients: React.FC<ClientsProps> = ({ clients, clientCrud, projects, projec
                                 </div>
                             </header>
 
-                            <section className="grid md:grid-cols-3 gap-6 mb-12">
+                            <section className="grid md:grid-cols-3 gap-4 mb-12">
                                 <div className="bg-slate-50 p-6 rounded-xl"><h3 className="text-xs font-semibold uppercase text-slate-400 mb-2">Ditagihkan Kepada</h3><p className="font-bold text-slate-800">{clientForDetail.name}</p><p className="text-sm text-slate-600">{clientForDetail.email}</p><p className="text-sm text-slate-600">{clientForDetail.phone}</p></div>
                                 <div className="bg-slate-50 p-6 rounded-xl"><h3 className="text-xs font-semibold uppercase text-slate-400 mb-2">Diterbitkan Oleh</h3><p className="font-bold text-slate-800">{userProfile.companyName}</p><p className="text-sm text-slate-600">{userProfile.email}</p><p className="text-sm text-slate-600">{userProfile.phone}</p></div>
                                 <div className="bg-blue-600 text-white p-6 rounded-xl printable-bg-blue printable-text-white"><h3 className="text-xs font-semibold uppercase text-blue-200 mb-2">Total Tagihan</h3><p className="font-extrabold text-3xl tracking-tight">{formatCurrency(remaining)}</p><p className="text-sm text-blue-200 mt-1">Jatuh Tempo: {formatDate(project.date)}</p></div>
@@ -895,9 +890,9 @@ const Clients: React.FC<ClientsProps> = ({ clients, clientCrud, projects, projec
                             </table></section>
 
                             <section className="mt-12">
-                                <div className="flex justify-between">
-                                    <div className="w-2/5"><h4 className="font-semibold text-slate-600">Tanda Tangan</h4>{project.invoiceSignature ? (<img src={project.invoiceSignature} alt="Tanda Tangan" className="h-20 mt-2 object-contain" />) : (<div className="h-20 mt-2 flex items-center justify-center text-xs text-slate-400 italic border border-dashed rounded-lg">Belum Ditandatangani</div>)}</div>
-                                    <div className="w-2/5 space-y-2 text-sm">
+                                <div className="flex flex-col sm:flex-row justify-between">
+                                    <div className="sm:w-1/3 w-full"><h4 className="font-semibold text-slate-600">Tanda Tangan</h4>{project.invoiceSignature ? (<img src={project.invoiceSignature} alt="Tanda Tangan" className="h-20 mt-2 object-contain" loading="lazy" decoding="async" />) : (<div className="h-20 mt-2 flex items-center justify-center text-xs text-slate-400 italic border border-dashed rounded-lg">Belum Ditandatangani</div>)}</div>
+                                        <div className="sm:w-1/3 w-full space-y-2 text-sm">
                                         <div className="flex justify-between"><span className="text-slate-500">Subtotal</span><span className="font-semibold text-slate-800">{formatCurrency(project.totalCost)}</span></div>
                                         {project.discountAmount && project.discountAmount > 0 && (<div className="flex justify-between"><span className="text-slate-500">Diskon</span><span className="font-semibold text-green-600 print-text-green">-{formatCurrency(project.discountAmount)}</span></div>)}
                                         <div className="flex justify-between"><span className="text-slate-500">Telah Dibayar</span><span className="font-semibold text-slate-800">-{formatCurrency(project.amountPaid)}</span></div>
@@ -917,12 +912,12 @@ const Clients: React.FC<ClientsProps> = ({ clients, clientCrud, projects, projec
              return (
                 <div id="receipt-content" className="p-1">
                      <div className="printable-content bg-slate-50 font-sans text-slate-800 printable-area">
-                        <div className="max-w-md mx-auto bg-white p-8 shadow-lg rounded-xl">
+                        <div className="max-w-full sm:max-w-lg mx-auto bg-white p-4 sm:p-8 shadow-lg rounded-xl">
                             <header className="text-center mb-8"><h1 className="text-2xl font-bold text-slate-900">KWITANSI PEMBAYARAN</h1><p className="text-sm text-slate-500">{userProfile.companyName}</p></header>
                             <div className="p-4 bg-green-500/10 border border-green-200 rounded-lg text-center mb-8 printable-bg-green-light"><p className="text-sm font-semibold text-green-700 print-text-green">PEMBAYARAN DITERIMA</p><p className="text-3xl font-bold text-green-800 print-text-green mt-1">{formatCurrency(transaction.amount)}</p></div>
                             <div className="space-y-3 text-sm"><div className="flex justify-between"><span className="text-slate-500">No. Kwitansi</span><span className="font-semibold text-slate-700 font-mono">{transaction.id.slice(0,12)}</span></div><div className="flex justify-between"><span className="text-slate-500">Tanggal Bayar</span><span className="font-semibold text-slate-700">{formatDate(transaction.date)}</span></div><div className="flex justify-between"><span className="text-slate-500">Diterima dari</span><span className="font-semibold text-slate-700">{clientForDetail.name}</span></div><div className="flex justify-between"><span className="text-slate-500">Metode</span><span className="font-semibold text-slate-700">{transaction.method}</span></div></div>
                             <div className="mt-6 pt-6 border-t border-slate-200"><p className="text-sm text-slate-500">Untuk pembayaran:</p><p className="font-semibold text-slate-800 mt-1">{transaction.description}</p>{project && (<div className="mt-2 text-xs text-slate-500"><p>Proyek: {project.projectName}</p><p>Total Tagihan: {formatCurrency(project.totalCost)} | Sisa: {formatCurrency(project.totalCost - project.amountPaid)}</p></div>)}</div>
-                            <footer className="mt-12 flex justify-between items-end"><p className="text-xs text-slate-400">Terima kasih.</p><div className="text-center">{transaction.vendorSignature ? (<img src={transaction.vendorSignature} alt="Tanda Tangan" className="h-16 object-contain" />) : (<div className="h-16 flex items-center justify-center text-xs text-slate-400 italic border-b border-dashed">Belum Ditandatangani</div>)}<p className="text-xs font-semibold text-slate-600 mt-1">({userProfile.authorizedSigner || userProfile.companyName})</p></div></footer>
+                            <footer className="mt-12 flex justify-between items-end"><p className="text-xs text-slate-400">Terima kasih.</p><div className="text-center">{transaction.vendorSignature ? (<img src={transaction.vendorSignature} alt="Tanda Tangan" className="h-16 object-contain" loading="lazy" decoding="async" />) : (<div className="h-16 flex items-center justify-center text-xs text-slate-400 italic border-b border-dashed">Belum Ditandatangani</div>)}<p className="text-xs font-semibold text-slate-600 mt-1">({userProfile.authorizedSigner || userProfile.companyName})</p></div></footer>
                         </div>
                     </div>
                 </div>
@@ -968,7 +963,7 @@ const Clients: React.FC<ClientsProps> = ({ clients, clientCrud, projects, projec
             <div className="bg-brand-surface p-4 rounded-xl shadow-lg border border-brand-border space-y-4 md:space-y-0 md:flex md:items-center md:gap-4">
                 <div className="input-group flex-grow !mt-0">
                     <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="input-field !bg-brand-bg !rounded-lg" placeholder=" " />
-                    <label className="input-label">Cari klien (nama, email, telepon)...</label>
+                    <label className="input-label">Cari klien (nama, email, WhatsApp)...</label>
                 </div>
                 <div className="input-group md:w-48 !mt-0">
                     <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="input-field !bg-brand-bg !rounded-lg">

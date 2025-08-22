@@ -77,6 +77,7 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ leadCrud }) => {
 
                 <form className="space-y-4" onSubmit={handleSubmit}>
                     <div className="input-group">
+                        <label htmlFor="name" className="input-label">Nama Anda</label>
                         <input
                             id="name"
                             name="name"
@@ -87,9 +88,9 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ leadCrud }) => {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                         />
-                        <label htmlFor="name" className="input-label">Nama Anda</label>
                     </div>
                     <div className="input-group">
+                        <label htmlFor="contact" className="input-label">Kontak (Email / No. WhatsApp)</label>
                         <input
                             id="contact"
                             name="contact"
@@ -100,9 +101,9 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ leadCrud }) => {
                             value={contact}
                             onChange={(e) => setContact(e.target.value)}
                         />
-                        <label htmlFor="contact" className="input-label">Kontak (Email / No. WhatsApp)</label>
                     </div>
                     <div className="input-group">
+                        <label htmlFor="message" className="input-label">Pesan atau Saran Anda</label>
                         <textarea
                             id="message"
                             name="message"
@@ -113,7 +114,6 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ leadCrud }) => {
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
                         />
-                         <label htmlFor="message" className="input-label">Pesan atau Saran Anda</label>
                     </div>
 
                     <div className="pt-2">

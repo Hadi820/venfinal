@@ -86,11 +86,12 @@ const PublicFeedbackForm: React.FC<PublicFeedbackFormProps> = ({ setClientFeedba
                            <label htmlFor="clientName" className="input-label">Nama Anda</label>
                        </div>
 
-                        <div className="pt-2">
+                        <div className="pt-2" aria-describedby="ratingHelp">
                             <label className="text-sm text-brand-text-secondary">Peringkat Kepuasan Anda</label>
+                            <p id="ratingHelp" className="input-help">Pilih 1-5 bintang. 5 = Sangat Puas.</p>
                             <div className="flex items-center justify-center gap-4 mt-3">
                                 {[1, 2, 3, 4, 5].map(star => (
-                                    <button key={star} type="button" onClick={() => handleRatingChange(star)} className={`p-2 rounded-full transition-colors ${formState.rating >= star ? 'bg-yellow-400/20' : 'bg-brand-input hover:bg-brand-input/70'}`}>
+                                    <button key={star} type="button" onClick={() => handleRatingChange(star)} className={`p-2 rounded-full transition-colors ${formState.rating >= star ? 'bg-yellow-400/20' : 'bg-brand-input hover:bg-brand-input/70'}`} aria-pressed={formState.rating >= star} aria-label={`Pilih ${star} bintang`}>
                                         <StarIcon className={`w-8 h-8 ${formState.rating >= star ? 'text-yellow-400 fill-current' : 'text-gray-500'}`} />
                                     </button>
                                 ))}
@@ -98,8 +99,9 @@ const PublicFeedbackForm: React.FC<PublicFeedbackFormProps> = ({ setClientFeedba
                         </div>
                         
                         <div className="input-group">
-                            <textarea id="feedback" name="feedback" value={formState.feedback} onChange={handleFormChange} className="input-field" placeholder=" " required rows={5}></textarea>
+                            <textarea id="feedback" name="feedback" value={formState.feedback} onChange={handleFormChange} className="input-field" placeholder=" " required rows={5} aria-describedby="feedbackHelp"></textarea>
                             <label htmlFor="feedback" className="input-label">Saran & Masukan Anda</label>
+                            <p id="feedbackHelp" className="input-help">Beritahu kami pengalaman Anda, saran perbaikan, atau hal yang Anda sukai.</p>
                         </div>
                         
                         <div className="pt-6">

@@ -658,7 +658,7 @@ Salam hangat,
             window.open(whatsappUrl, '_blank');
             onClose(); // Close modal after sharing
         } else {
-            alert('Nomor telepon untuk penerima ini tidak ditemukan.');
+            alert('Nomor WhatsApp untuk penerima ini tidak ditemukan.');
         }
     };
 
@@ -1373,9 +1373,9 @@ export const Projects: React.FC<ProjectsProps> = ({ projects, projectCrud, clien
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                             {/* Column 1 */}
                             <div className="space-y-4">
-                                <div className="input-group"><select id="clientId" name="clientId" value={formData.clientId || ''} onChange={handleClientChange} className="input-field" required><option value="">Pilih Klien...</option>{clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select><label htmlFor="clientId" className="input-label">Pilih Klien</label></div>
+                                <div className="input-group"><select id="clientId" name="clientId" value={formData.clientId || ''} onChange={handleClientChange} className="input-field" aria-describedby="clientHelp" required><option value="">Pilih Klien...</option>{clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select><label htmlFor="clientId" className="input-label">Pilih Klien</label><p id="clientHelp" className="input-help">Pilih klien yang sudah terdaftar atau buat klien baru di menu Klien.</p></div>
                                 <div className="input-group"><input type="text" id="clientName" name="clientName" value={formData.clientName || ''} className="input-field bg-brand-input" readOnly required placeholder=" "/><label htmlFor="clientName" className="input-label">Nama Klien</label></div>
-                                <div className="input-group"><input type="text" id="projectName" name="projectName" value={formData.projectName || ''} onChange={handleFormChange} className="input-field" placeholder=" " required/><label htmlFor="projectName" className="input-label">Nama Proyek</label></div>
+                                <div className="input-group"><input type="text" id="projectName" name="projectName" value={formData.projectName || ''} onChange={handleFormChange} className="input-field" placeholder=" " aria-describedby="projectNameHelp" required/><label htmlFor="projectName" className="input-label">Nama Proyek</label><p id="projectNameHelp" className="input-help">Gunakan nama yang mudah dikenali (mis. Acara & tanggal).</p></div>
                                 <div className="input-group"><select id="projectType" name="projectType" value={formData.projectType || ''} onChange={handleFormChange} className="input-field" required><option value="">Pilih jenis...</option>{profile.projectTypes.map(t => <option key={t} value={t}>{t}</option>)}</select><label htmlFor="projectType" className="input-label">Jenis Proyek</label></div>
                                 <div className="input-group"><select id="status" name="status" value={formData.status || ''} onChange={handleFormChange} className="input-field"><option value="">Pilih status...</option>{profile.projectStatusConfig.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}</select><label htmlFor="status" className="input-label">Status</label></div>
                                 

@@ -83,26 +83,32 @@ const PublicLeadForm: React.FC<PublicLeadFormProps> = ({ leadCrud, userProfile }
                 </div>
                 <form className="space-y-4" onSubmit={handleSubmit}>
                     <div className="input-group">
-                        <input id="name" name="name" type="text" value={formState.name} onChange={handleFormChange} className="input-field" placeholder=" " required />
+                        <input id="name" name="name" type="text" value={formState.name} onChange={handleFormChange} className="input-field" placeholder=" " aria-describedby="nameHelp" required />
                         <label htmlFor="name" className="input-label">Nama</label>
+                        <p id="nameHelp" className="input-help">Tulis nama lengkap sesuai KTP atau identitas.</p>
                     </div>
                      <div className="input-group">
-                        <input id="whatsapp" name="whatsapp" type="tel" value={formState.whatsapp} onChange={handleFormChange} className="input-field" placeholder=" " required />
+                        <input id="whatsapp" name="whatsapp" type="tel" value={formState.whatsapp} onChange={handleFormChange} className="input-field" placeholder=" " aria-describedby="waHelp" required />
                         <label htmlFor="whatsapp" className="input-label">Nomor WhatsApp</label>
+                        <p id="waHelp" className="input-help">Masukkan nomor yang aktif untuk konfirmasi (contoh: 0812xxxx).</p>
                     </div>
                     <div className="input-group">
-                        <select id="eventType" name="eventType" value={formState.eventType} onChange={handleFormChange} className="input-field" required>
+                        <select id="eventType" name="eventType" value={formState.eventType} onChange={handleFormChange} className="input-field" aria-describedby="eventTypeHelp" required>
+                             <option value="" disabled>-- Pilih jenis acara --</option>
                              {userProfile.projectTypes.map(pt => <option key={pt} value={pt}>{pt}</option>)}
                         </select>
                         <label htmlFor="eventType" className="input-label">Jenis Acara</label>
+                        <p id="eventTypeHelp" className="input-help">Jika tidak yakin, pilih "Lainnya" atau hubungi admin.</p>
                     </div>
                     <div className="input-group">
-                        <input id="eventDate" name="eventDate" type="date" value={formState.eventDate} onChange={handleFormChange} className="input-field" placeholder=" " required />
+                        <input id="eventDate" name="eventDate" type="date" value={formState.eventDate} onChange={handleFormChange} className="input-field" placeholder=" " aria-describedby="dateHelp" required />
                         <label htmlFor="eventDate" className="input-label">Tanggal Acara</label>
+                        <p id="dateHelp" className="input-help">Tanggal acara (format: YYYY-MM-DD).</p>
                     </div>
                     <div className="input-group">
-                        <input id="eventLocation" name="eventLocation" type="text" value={formState.eventLocation} onChange={handleFormChange} className="input-field" placeholder=" " required />
+                        <input id="eventLocation" name="eventLocation" type="text" value={formState.eventLocation} onChange={handleFormChange} className="input-field" placeholder=" " aria-describedby="locationHelp" required />
                         <label htmlFor="eventLocation" className="input-label">Lokasi Acara</label>
+                        <p id="locationHelp" className="input-help">Nama gedung, alamat lengkap, atau lokasi yang mudah dikenali.</p>
                     </div>
                     <div className="pt-2">
                         <button type="submit" disabled={isSubmitting} className="w-full button-primary">

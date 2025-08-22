@@ -17,75 +17,94 @@ const SignaturePad: React.FC<SignaturePadProps> = ({ onSave, onClose }) => {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
+        // prevent default touch interactions (scroll/zoom) while drawing
+        canvas.style.touchAction = 'none';
+        // ensure crisp rendering on high DPI screens
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
         const rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width * ratio;
-        canvas.height = rect.height * ratio;
+        canvas.width = Math.round(rect.width * ratio);
+        canvas.height = Math.round(rect.height * ratio);
 
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        ctx.scale(ratio, ratio);
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0); // equivalent to scale but resets transform first
         const isDark = document.documentElement.classList.contains('dark');
         ctx.strokeStyle = isDark ? 'var(--color-text-light)' : 'var(--color-text-primary)';
-        ctx.lineWidth = 2.5;
+        ctx.lineWidth = 2.5; // base width in CSS pixels
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
     };
 
     useEffect(() => {
         setupCanvas();
-        window.addEventListener('resize', setupCanvas);
-        return () => window.removeEventListener('resize', setupCanvas);
+        // Use ResizeObserver to handle container size changes (orientation, keyboard)
+        const canvas = canvasRef.current;
+        let ro: ResizeObserver | null = null;
+        try {
+            if (canvas && typeof ResizeObserver !== 'undefined') {
+                ro = new ResizeObserver(() => setupCanvas());
+                ro.observe(canvas);
+            } else {
+                window.addEventListener('resize', setupCanvas);
+            }
+        } catch (e) {
+            window.addEventListener('resize', setupCanvas);
+        }
+
+        return () => {
+            if (ro && canvas) ro.unobserve(canvas);
+            window.removeEventListener('resize', setupCanvas);
+        };
     }, []);
 
-    const getCoords = (e: React.MouseEvent | React.TouchEvent) => {
+    const getCoordsFromPointer = (clientX: number, clientY: number) => {
         const canvas = canvasRef.current;
-        if (!canvas) return { offsetX: 0, offsetY: 0 };
+        if (!canvas) return { x: 0, y: 0 };
         const rect = canvas.getBoundingClientRect();
-
-        if (e.nativeEvent instanceof MouseEvent) {
-            return { offsetX: e.nativeEvent.clientX - rect.left, offsetY: e.nativeEvent.clientY - rect.top };
-        }
-        if (e.nativeEvent instanceof TouchEvent && e.nativeEvent.touches.length > 0) {
-            return { offsetX: e.nativeEvent.touches[0].clientX - rect.left, offsetY: e.nativeEvent.touches[0].clientY - rect.top };
-        }
-        return { offsetX: 0, offsetY: 0 };
+        return { x: clientX - rect.left, y: clientY - rect.top };
     };
 
-    const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
+    const startDrawing = (e: React.PointerEvent<HTMLCanvasElement>) => {
         e.preventDefault();
         const canvas = canvasRef.current;
         const ctx = canvas?.getContext('2d');
         if (!canvas || !ctx) return;
 
-        const { offsetX, offsetY } = getCoords(e);
+        // make stroke slightly thicker for touch input
+        const pointerType = (e.nativeEvent as PointerEvent).pointerType;
+        ctx.lineWidth = pointerType === 'touch' ? 3.5 : 2.5;
+
+        const coords = getCoordsFromPointer(e.clientX, e.clientY);
         setIsDrawing(true);
         if (!isSigned) setIsSigned(true);
-        
-        lastPointRef.current = { x: offsetX, y: offsetY };
+
+        lastPointRef.current = { x: coords.x, y: coords.y };
         ctx.beginPath();
-        ctx.moveTo(offsetX, offsetY);
+        ctx.moveTo(coords.x, coords.y);
+
+        // capture pointer so we keep receiving events outside the element bounds
+        try { canvas.setPointerCapture((e.nativeEvent as PointerEvent).pointerId); } catch (_) {}
     };
 
-    const draw = (e: React.MouseEvent | React.TouchEvent) => {
+    const draw = (e: React.PointerEvent<HTMLCanvasElement>) => {
         if (!isDrawing) return;
         e.preventDefault();
         const canvas = canvasRef.current;
         const ctx = canvas?.getContext('2d');
         if (!canvas || !ctx || !lastPointRef.current) return;
-        
-        const { offsetX, offsetY } = getCoords(e);
-        const midPointX = (lastPointRef.current.x + offsetX) / 2;
-        const midPointY = (lastPointRef.current.y + offsetY) / 2;
+
+        const coords = getCoordsFromPointer(e.clientX, e.clientY);
+        const midPointX = (lastPointRef.current.x + coords.x) / 2;
+        const midPointY = (lastPointRef.current.y + coords.y) / 2;
 
         ctx.quadraticCurveTo(lastPointRef.current.x, lastPointRef.current.y, midPointX, midPointY);
         ctx.stroke();
 
-        lastPointRef.current = { x: offsetX, y: offsetY };
+        lastPointRef.current = { x: coords.x, y: coords.y };
     };
 
-    const stopDrawing = () => {
+    const stopDrawing = (e?: React.PointerEvent<HTMLCanvasElement> | undefined) => {
         if (!isDrawing) return;
         const canvas = canvasRef.current;
         const ctx = canvas?.getContext('2d');
@@ -97,6 +116,10 @@ const SignaturePad: React.FC<SignaturePadProps> = ({ onSave, onClose }) => {
 
         setIsDrawing(false);
         lastPointRef.current = null;
+
+        if (e && canvas) {
+            try { canvas.releasePointerCapture((e.nativeEvent as PointerEvent).pointerId); } catch (_) {}
+        }
     };
 
     const clearCanvas = () => {
@@ -121,17 +144,17 @@ const SignaturePad: React.FC<SignaturePadProps> = ({ onSave, onClose }) => {
     return (
         <div className="flex flex-col items-center w-full">
             <p className="text-sm text-brand-text-secondary mb-3 text-center">Gunakan mouse atau jari Anda untuk menandatangani di area di bawah ini.</p>
-            <div className="relative w-full aspect-[2/1] rounded-lg border-2 border-dashed border-brand-border overflow-hidden">
+            <div className="relative w-full rounded-lg border-2 border-dashed border-brand-border overflow-hidden" style={{minHeight: 180, maxHeight: 600}}>
                 <canvas
                     ref={canvasRef}
                     className="w-full h-full bg-brand-bg cursor-crosshair"
-                    onMouseDown={startDrawing}
-                    onMouseMove={draw}
-                    onMouseUp={stopDrawing}
-                    onMouseLeave={stopDrawing}
-                    onTouchStart={startDrawing}
-                    onTouchMove={draw}
-                    onTouchEnd={stopDrawing}
+                    onPointerDown={startDrawing}
+                    onPointerMove={draw}
+                    onPointerUp={stopDrawing}
+                    onPointerCancel={stopDrawing}
+                    onPointerLeave={stopDrawing}
+                    role="img"
+                    aria-label="Area tanda tangan; gunakan jari atau stylus untuk menandatangani"
                 />
                 {!isSigned && (
                      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-brand-text-secondary/60">

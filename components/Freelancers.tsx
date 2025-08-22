@@ -648,7 +648,7 @@ export const Freelancers: React.FC<FreelancersProps> = ({
     
         return (
             <div id={`payment-slip-content-${record.id}`} className="printable-content bg-slate-50 font-sans text-slate-800 printable-area">
-                <div className="max-w-4xl mx-auto bg-white p-8 sm:p-12 shadow-lg">
+                <div className="max-w-full sm:max-w-6xl mx-auto bg-white p-4 sm:p-12 shadow-lg">
                     <header className="flex justify-between items-start mb-12">
                         <div>
                             <h1 className="text-3xl font-extrabold text-slate-900">{userProfile.companyName}</h1>
@@ -686,12 +686,12 @@ export const Freelancers: React.FC<FreelancersProps> = ({
                     </section>
     
                     <section className="mt-12">
-                        <div className="flex justify-end"><div className="w-full sm:w-2/5 space-y-2 text-sm"><div className="flex justify-between font-bold text-xl text-slate-900 bg-slate-100 p-4 rounded-lg"><span>TOTAL DIBAYAR</span><span>{formatCurrency(record.totalAmount)}</span></div></div></div>
-                        <div className="flex justify-between items-end mt-12">
+                        <div className="flex justify-end"><div className="w-full sm:w-1/3 space-y-2 text-sm"><div className="flex justify-between font-bold text-xl text-slate-900 bg-slate-100 p-4 rounded-lg"><span>TOTAL DIBAYAR</span><span>{formatCurrency(record.totalAmount)}</span></div></div></div>
+                        <div className="flex flex-col sm:flex-row justify-between items-end mt-12">
                             <div></div>
-                            <div className="text-center w-2/5">
+                            <div className="text-center sm:w-1/3 w-full">
                                 <p className="text-sm text-slate-600">Diverifikasi oleh,</p>
-                                <div className="h-20 mt-2 flex items-center justify-center">{record.vendorSignature ? (<img src={record.vendorSignature} alt="Tanda Tangan" className="h-20 object-contain" />) : (<div className="h-20 flex items-center justify-center text-xs text-slate-400 italic border-b border-dashed w-full">Belum Ditandatangani</div>)}</div>
+                                <div className="h-20 mt-2 flex items-center justify-center">{record.vendorSignature ? (<img src={record.vendorSignature} alt="Tanda Tangan" className="h-20 object-contain" loading="lazy" decoding="async" />) : (<div className="h-20 flex items-center justify-center text-xs text-slate-400 italic border-b border-dashed w-full">Belum Ditandatangani</div>)}</div>
                                 <p className="text-sm font-semibold text-slate-800 mt-1 border-t-2 border-slate-300 pt-1">({userProfile.authorizedSigner || userProfile.companyName})</p>
                             </div>
                         </div>
@@ -704,7 +704,7 @@ export const Freelancers: React.FC<FreelancersProps> = ({
     };
     
     const handleDownloadFreelancers = () => {
-        const headers = ['Nama', 'Role', 'Email', 'Telepon', 'No. Rekening', 'Fee Belum Dibayar', 'Saldo Hadiah', 'Rating'];
+    const headers = ['Nama', 'Role', 'Email', 'No. WhatsApp', 'No. Rekening', 'Fee Belum Dibayar', 'Saldo Hadiah', 'Rating'];
         const data = teamMembers.map(member => {
             const unpaidFee = teamProjectPayments
                 .filter(p => p.teamMemberId === member.id && p.status === 'Unpaid')
@@ -793,7 +793,7 @@ export const Freelancers: React.FC<FreelancersProps> = ({
                     <div className="input-group"><input type="text" id="name" name="name" value={formData.name} onChange={handleFormChange} className="input-field" placeholder=" " required /><label className="input-label">Nama</label></div>
                     <div className="input-group"><input type="text" id="role" name="role" value={formData.role} onChange={handleFormChange} className="input-field" placeholder=" " required /><label className="input-label">Role (e.g., Fotografer)</label></div>
                     <div className="input-group"><input type="email" id="email" name="email" value={formData.email} onChange={handleFormChange} className="input-field" placeholder=" " required /><label className="input-label">Email</label></div>
-                    <div className="input-group"><input type="tel" id="phone" name="phone" value={formData.phone} onChange={handleFormChange} className="input-field" placeholder=" " required /><label className="input-label">Telepon</label></div>
+                    <div className="input-group"><input type="tel" id="phone" name="phone" value={formData.phone} onChange={handleFormChange} className="input-field" placeholder=" " required /><label className="input-label">No. WhatsApp</label></div>
                     <div className="input-group"><input type="number" id="standardFee" name="standardFee" value={formData.standardFee} onChange={handleFormChange} className="input-field" placeholder=" " required /><label className="input-label">Fee Standar (IDR)</label></div>
                     <div className="input-group"><input type="text" id="noRek" name="noRek" value={formData.noRek} onChange={handleFormChange} className="input-field" placeholder=" " /><label className="input-label">No. Rekening</label></div>
                     <div className="flex justify-end gap-3 pt-6 border-t border-brand-border"><button type="button" onClick={() => setIsFormOpen(false)} className="button-secondary">Batal</button><button type="submit" className="button-primary">{formMode === 'add' ? 'Simpan' : 'Update'}</button></div>

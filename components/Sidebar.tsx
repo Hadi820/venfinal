@@ -50,7 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, isOpen, se
         onClick={() => setIsOpen(false)}
       ></div>
 
-      <aside id="sidebar" className={`fixed xl:relative inset-y-0 left-0 w-64 bg-brand-surface flex-col flex-shrink-0 flex z-40 transform transition-transform duration-300 ease-in-out xl:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+  <aside id="sidebar" className={`sidebar fixed xl:relative inset-y-0 left-0 w-64 bg-brand-surface flex-col flex-shrink-0 flex z-40 transform transition-transform duration-300 ease-in-out xl:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="h-20 flex items-center px-6 border-b border-brand-border">
            <div className="flex items-center gap-3">
             <span className="text-xl font-extrabold text-gradient">Vena Pictures</span>

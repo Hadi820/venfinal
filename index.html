@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#f1f5f9">
     <title>Vena Pictures</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -125,59 +125,105 @@
       /* --- Text Gradient --- */
       .text-gradient {
         background: linear-gradient(to right, var(--color-accent), #7c3aed); /* blue-500 to violet-600 */
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        text-fill-color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
       }
 
-      /* --- Form Element Styles (Floating Label) --- */
+      /* --- Form Element Styles (Floating Label, standardized) --- */
       .input-group {
-        position: relative;
-        margin-top: 1.75rem; /* Add more margin for spacing */
+        /* International best practice: label above input, helper below, inputs full width */
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        margin-top: 1rem; /* consistent spacing */
+        align-items: stretch; /* ensure label, input, helper fill available width */
+        width: 100%;
       }
+
+    /* Ensure label always appears above the input regardless of DOM order.
+      Some components render <input/><label/> while others render <label/><input/>.
+      Use flexbox ordering to keep labels visually consistent without changing markup. */
+    .input-group { display: flex; flex-direction: column; }
+    .input-label { order: 0; }
+    .input-field, .add-on-list, .upload-area { order: 1; }
+    .input-help { order: 2; }
+
+    /* When label is placed after the input in the DOM (common in many files),
+      bump the label to appear before the input visually. */
+    input.input-field + .input-label,
+    select.input-field + .input-label,
+    textarea.input-field + .input-label {
+      order: -1;
+    }
+
+      /* Base input/textarea/select style */
       .input-field {
         display: block;
         width: 100%;
-        padding: 10px 0 10px;
+        padding: 0.75rem 0.75rem;
         font-size: 1rem;
-        color: var(--color-text-light);
-        background-color: transparent;
-        border: none;
-        border-bottom: 1px solid var(--color-border);
+        color: var(--color-text-primary);
+        background-color: var(--color-input-bg);
+        border: 1px solid var(--color-border);
+        border-radius: 0.5rem;
         outline: none;
-        transition: border-color 0.2s;
+        transition: box-shadow 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
       }
+
+  /* Show placeholder text by default (static placeholders) */
+  .input-field::placeholder { color: var(--color-text-secondary); }
+
+      /* Focus state */
       .input-field:focus {
-        border-bottom: 2px solid transparent;
-        border-image: linear-gradient(to right, var(--color-accent), #a78bfa);
-        border-image-slice: 1;
-      }
-      .input-label {
-        position: absolute;
-        top: 10px;
-        left: 0;
-        font-size: 1rem;
-        color: var(--color-text-secondary);
-        pointer-events: none;
-        transition: 0.2s ease all;
+        border-color: var(--color-accent);
+        box-shadow: 0 6px 18px rgba(59, 130, 246, 0.08), 0 0 0 4px rgba(59,130,246,0.06);
+        background-color: var(--color-surface);
       }
 
-      .input-field:focus + .input-label,
-      .input-field:not(:placeholder-shown) + .input-label {
-        top: -14px;
-        left: 0;
-        font-size: 0.75rem;
-        color: var(--color-accent);
+      /* Disabled / readOnly */
+      .input-field:disabled,
+      .input-field[readonly] {
+        opacity: 0.7;
+        background-color: color-mix(in srgb, var(--color-input-bg) 70%, #ffffff 30%);
+        cursor: not-allowed;
       }
-      
-      /* Select needs specific styling */
+
+      /* Floating label */
+      /* Static label style: label sits above the input and is always visible */
+      .input-label {
+        display: block; /* ensure label occupies full line above input */
+        position: static;
+        transform: none;
+        font-size: 0.95rem;
+        color: var(--color-text-secondary);
+        pointer-events: auto;
+        margin: 0; /* controlled by .input-group gap */
+        padding: 0;
+        background: transparent;
+        width: 100%;
+        text-align: left; /* label text aligned to the input's left */
+        font-weight: 600;
+      }
+
+      .input-help {
+        display: block;
+        font-size: 0.8rem;
+        color: var(--color-text-secondary);
+        margin-top: 0.125rem;
+        width: 100%;
+        text-align: left;
+      }
+
+      /* Remove floating label behavior: no sibling selectors needed for static labels */
+
+      /* Select specific tweaks: keep arrow and spacing */
       select.input-field {
         background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-        background-position: right 0.25rem center;
+        background-position: right 0.75rem center;
         background-repeat: no-repeat;
         background-size: 1.25em 1.25em;
         padding-right: 2.5rem;
@@ -185,43 +231,126 @@
       html.dark select.input-field {
          background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
       }
-      
-      /* Keep label floated for selects */
-      select.input-field + .input-label {
-         top: -14px;
-         left: 0;
-         font-size: 0.75rem;
-         color: var(--color-accent);
+
+      /* Ensure label stays floated for selects that use label-only (no placeholder) */
+      /* Neutralize any residual floating-label selectors to avoid overlap when markup varies */
+      select.input-field + .input-label,
+      input.input-field + .input-label,
+      textarea.input-field + .input-label {
+         position: static !important;
+         transform: none !important;
+         top: auto !important;
+         left: auto !important;
+         font-size: 0.95rem !important;
+         color: var(--color-text-secondary) !important;
+         margin: 0 !important;
       }
-      
+
+      /* Make sure every child of .input-group fills available width and wraps safely */
+      .input-group > * {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .input-field {
+        box-sizing: border-box;
+        line-height: 1.4;
+        min-height: 2.5rem;
+        padding: 0.75rem 0.75rem;
+      }
+
+      .input-label {
+        display: block;
+        margin-bottom: 0.12rem;
+        white-space: normal;
+        overflow-wrap: anywhere;
+      }
+
+      .input-help {
+        display: block;
+        margin-top: 0.125rem;
+        color: var(--color-text-secondary);
+        overflow-wrap: anywhere;
+      }
+
+      /* Add-on list defensive styling: ensure each add-on line wraps and price+checkbox align */
+      .add-on-list label {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.5rem;
+        align-items: center;
+        width: 100%;
+      }
+
+      .add-on-list label span {
+        flex: 1 1 auto;
+        min-width: 0; /* allow text truncation/wrapping */
+        overflow-wrap: anywhere;
+      }
+
+      .add-on-list label input[type="checkbox"] {
+        flex: 0 0 auto;
+        margin-left: 0.5rem;
+      }
+
+      /* Ensure add-on list items don't cause label overlap by providing extra top spacing
+         when rendered inside a floating-label .input-group on large screens */
+      @media (min-width: 1024px) {
+        .add-on-list { padding-top: 0.75rem; }
+        .upload-area { padding-top: 0.5rem; }
+        /* If label sits above input due to markup, ensure helpers are pushed down */
+        .input-group > .input-label + .add-on-list,
+        .input-group > .input-label + .upload-area {
+          margin-top: 0.5rem;
+        }
+      }
+
+      /* Upload area small-screen tweak: keep icon & text stacked */
+      .upload-area .mt-4 {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        align-items: center;
+      }
+
+      /* Textareas: allow resize and comfortable height */
       textarea.input-field {
-        min-height: 80px;
+        min-height: 120px;
+        resize: vertical;
+        padding-top: 0.9rem;
+        padding-bottom: 0.9rem;
       }
-      
+
+      /* Checkboxes: simple, accessible styling without Tailwind @apply */
       input[type="checkbox"] {
-        @apply h-4 w-4 shrink-0 rounded;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 0.25rem;
         color: var(--color-accent);
         border: 1.5px solid var(--color-text-secondary);
         background-color: transparent;
+        vertical-align: middle;
       }
       input[type="checkbox"]:checked {
         border-color: var(--color-accent);
-        background-color: currentColor;
+        background-color: var(--color-accent);
         background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+        background-size: 0.75rem 0.75rem;
+        background-position: center;
+        background-repeat: no-repeat;
       }
 
+      /* Date picker tweaks */
       input[type="date"]::-webkit-calendar-picker-indicator {
           cursor: pointer;
-          opacity: 0.6;
+          opacity: 0.9;
           filter: invert(var(--dark-mode-filter, 0));
-          transition: opacity 0.2s;
+          transition: opacity 0.12s;
       }
        html.dark input[type="date"]::-webkit-calendar-picker-indicator {
            filter: invert(1);
       }
-      input[type="date"]::-webkit-calendar-picker-indicator:hover {
-          opacity: 1;
-      }
+      input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
       
       /* --- New Input Style for Login --- */
       .input-with-icon {
@@ -389,6 +518,304 @@
           animation: pulse-ring 2s infinite;
       }
 
+      /* --- RESPONSIVE LAYOUT & COMPONENT HELPERS --- */
+      /* Container to center app content and limit width */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem;
+      }
+      @media (min-width: 1280px) { .container { padding: 2rem; } }
+
+      /* Card base style for consistent look across components */
+      .card {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 0.75rem;
+        padding: clamp(0.75rem, 1.5vw, 1.25rem);
+        box-shadow: 0 8px 20px rgba(2,6,23,0.04);
+        color: var(--color-text-primary);
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .card-header { display:flex; align-items:center; gap:0.75rem; justify-content:space-between; }
+      .card-title { font-weight:600; font-size: clamp(0.95rem, 0.5vw + 0.9rem, 1.125rem); color: var(--color-text-light); }
+      .card-subtitle { font-size: 0.875rem; color: var(--color-text-secondary); }
+
+      /* Responsive grid helper: 1 / 2 / 3 / 4 columns at breakpoints */
+      .grid-responsive { display:grid; gap:1rem; grid-template-columns: repeat(1, minmax(0,1fr)); }
+      @media (min-width: 640px) { .grid-responsive { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+      @media (min-width: 1024px) { .grid-responsive { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+      @media (min-width: 1280px) { .grid-responsive { grid-template-columns: repeat(4, minmax(0,1fr)); } }
+
+      /* Icon sizing helpers to keep visual rhythm */
+      .icon { width: 1.25rem; height: 1.25rem; flex-shrink:0; color: var(--color-accent); }
+      @media (min-width: 1024px) { .icon { width: 1.5rem; height: 1.5rem; } }
+
+      /* Text utilities */
+      .truncate-ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+      /* Form layout helpers */
+      .form-row { display:flex; gap:1rem; flex-direction:column; }
+      @media (min-width: 768px) { .form-row { flex-direction:row; } }
+      .form-row .input-field { flex:1; min-width:0; }
+
+      /* Input / Label / Helper standardized styles */
+      .input-group { display:flex; flex-direction:column; gap:0.375rem; }
+      .input-label { font-size: 0.9rem; color: var(--color-text-secondary); pointer-events: auto; cursor: text; }
+      .input-help { font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 0.25rem; }
+      .input-error { font-size: 0.75rem; color: var(--color-danger); margin-top: 0.25rem; }
+
+      /* Ensure inputs and selects are full-width and touch-friendly */
+      .input-field { width:100%; box-sizing: border-box; padding: 0.75rem 0.75rem; border-radius: 0.5rem; font-size: 0.95rem; }
+      select.input-field { -webkit-appearance: none; appearance: none; }
+      .input-field:focus { outline: none; box-shadow: 0 6px 18px rgba(59, 130, 246, 0.08), 0 0 0 4px rgba(59,130,246,0.06); }
+
+      /* For accessibility keep placeholder visible on small screens where labels stack above */
+      .input-field::placeholder { color: transparent; }
+
+      /* Small screens: stack label above input (disable floating label behaviour) */
+      @media (max-width: 639px) {
+        .input-group { gap: 0.5rem; }
+        .input-label {
+          position: static !important;
+          transform: none !important;
+          top: auto !important;
+          left: auto !important;
+          font-size: 0.95rem;
+          color: var(--color-text-primary);
+          padding: 0;
+        }
+        .input-field::placeholder { color: var(--color-text-secondary); }
+        /* Slightly larger inputs for touch */
+        .input-field { padding: 0.9rem; font-size: 1rem; }
+        /* Make helper and error text slightly bigger for legibility */
+        .input-help, .input-error { font-size: 0.8rem; }
+      }
+
+      /* Tablet: a middle ground — keep floating label but increased spacing */
+      @media (min-width: 640px) and (max-width: 1023px) {
+        .input-group { gap: 0.4rem; }
+        .input-label { font-size: 0.88rem; }
+        .input-field { padding: 0.8rem; }
+      }
+
+      /* Floating label support: keep existing behavior for larger screens */
+      @media (min-width: 1024px) {
+        .input-label { position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); background: transparent; padding: 0 0.25rem; }
+        .input-group { position: relative; }
+        /* keep placeholder hidden when using floating labels */
+        .input-field::placeholder { color: transparent; }
+      }
+
+      /* Error / invalid styles */
+      .input-field[aria-invalid="true"], .input-field.invalid {
+        border-color: var(--color-danger);
+        box-shadow: 0 4px 12px rgba(220,38,38,0.08);
+      }
+
+      /* Disabled / readonly tweaks: larger contrast for readability */
+      .input-field:disabled, .input-field[readonly] { background-color: color-mix(in srgb, var(--color-input-bg) 80%, #ffffff 20%); }
+
+      /* Density adjustments for small screens */
+      @media (max-width: 639px) {
+        .card { padding: 0.65rem; border-radius: 0.5rem; }
+        .text-base { font-size: clamp(0.85rem, 1vw + 0.6rem, 1rem); }
+        .button-primary { padding: 0.5rem 0.9rem; font-size: 0.75rem; }
+        /* Hide wide sidebar on small screens (existing sidebar class used in project) */
+        .sidebar { display: none; }
+        .bottom-nav { display: block; }
+      }
+
+      /* iPhone specific: normalize button sizes for common iPhone widths (portrait & small landscape)
+         Ensures buttons are consistent, touch-friendly (min 44px high) and not oversized. Overrides
+         the more generic small-screen rule above when device width <= 420px. */
+      @media (max-width: 420px) {
+        .button-primary {
+          padding: 0.45rem 0.8rem; /* tighten horizontal padding */
+          font-size: 0.875rem; /* ~14px for readability */
+          min-height: 44px; /* Apple's recommended minimum touch size */
+          border-radius: 0.75rem; /* slightly rounded but not full pill */
+          white-space: normal; /* allow wrapping on very small screens */
+        }
+        .button-secondary {
+          padding: 0.45rem 0.8rem;
+          font-size: 0.875rem;
+          min-height: 44px;
+          border-radius: 0.5rem;
+          white-space: normal;
+        }
+        /* Ensure full-width action buttons (if used) remain tappable */
+        .w-full.button-primary, .w-full.button-secondary { display: inline-flex; align-items:center; justify-content:center; }
+        /* Prevent printable tables from overflowing: allow horizontal scroll and wrap text in cells */
+        .printable-area, .printable-content {
+          overflow-x: auto !important;
+          -webkit-overflow-scrolling: touch;
+        }
+        .printable-content table, .printable-area table, .prose table {
+          width: 100% !important;
+          table-layout: auto !important;
+          border-collapse: collapse !important;
+        }
+        .printable-content th, .printable-content td, .printable-area th, .printable-area td {
+          white-space: normal !important;
+          word-break: break-word !important;
+          overflow-wrap: anywhere !important;
+          min-width: 0 !important;
+          padding: 0.35rem 0.45rem !important;
+        }
+        /* Neutralize fixed utility widths (e.g. w-1/4) inside printable content so columns don't force overflow */
+        .printable-content td[class*="w-"], .printable-content th[class*="w-"], .printable-area td[class*="w-"], .printable-area th[class*="w-"] {
+          width: auto !important;
+          min-width: 0 !important;
+        }
+        /* Ensure modal inner wrapper fits the viewport with small side gutters */
+        .fixed.inset-0 > div {
+          /* reduce side gutters on very small screens so modals can use more width */
+          max-width: calc(100% - 1rem) !important;
+          padding-left: 0.5rem !important;
+          padding-right: 0.5rem !important;
+        }
+
+        /* --- Invoice / Receipt specific fixes for very small screens --- */
+        /* Make the white invoice card use full available width and reduce internal padding */
+        .printable-content .max-w-4xl, .printable-content .max-w-md, .printable-content .max-w-2xl {
+          /* consume almost full viewport width but keep a tiny gutter so rounded corners remain visible */
+          max-width: calc(100% - 1rem) !important;
+          width: calc(100% - 1rem) !important;
+          margin: 0.5rem !important;
+          padding: 0.5rem !important;
+          box-shadow: none !important;
+          border-radius: 0.5rem !important;
+        }
+
+        /* Also ensure printable-area itself has minimal side padding on very small screens */
+        .printable-area, .printable-content { padding-left: 0 !important; padding-right: 0 !important; }
+
+        /* Stack header items vertically so the right-side totals don't force narrow content */
+        .printable-content header { display: flex !important; flex-direction: column !important; gap: 0.5rem !important; align-items: flex-start !important; }
+        .printable-content header .text-right { text-align: left !important; }
+
+        /* Shrink the big blue total box and its typography */
+        .printable-content .printable-bg-blue { padding: 0.8rem !important; }
+        .printable-content .printable-bg-blue .text-3xl { font-size: 1.25rem !important; }
+
+        /* Make table cells wrap and use smaller padding/font to fit columns */
+        .printable-content table, .printable-content thead, .printable-content tbody, .printable-content tr, .printable-content th, .printable-content td {
+          font-size: 0.78rem !important;
+        }
+        .printable-content th, .printable-content td { padding: 0.3rem 0.35rem !important; }
+
+        /* Override Tailwind width utilities inside printable content (e.g., w-2/5) so columns stack */
+        .printable-content .w-2\/5, .printable-area .w-2\/5, .printable-content .w-1\/2, .printable-area .w-1\/2 {
+          width: 100% !important;
+          display: block !important;
+        }
+
+        /* For the totals block (which used .w-2/5), make it full width and move below signature */
+        .printable-content section > .flex.justify-between { flex-direction: column !important; gap: 0.75rem !important; }
+      }
+
+      /* iPad / small tablet tweaks */
+      @media (min-width: 768px) and (max-width: 1023px) {
+        .card { padding: 0.9rem; border-radius: 0.65rem; }
+        .bottom-nav { display: none; }
+      }
+
+      /* Explicit iPad sizing (covers typical 768–1024px widths) to keep buttons consistent and not oversized */
+      @media (min-width: 768px) and (max-width: 1024px) {
+        .button-primary {
+          padding: 0.6rem 1rem;
+          font-size: 0.95rem; /* ~15px */
+          min-height: 48px;
+          border-radius: 0.75rem;
+        }
+        .button-secondary {
+          padding: 0.6rem 1rem;
+          font-size: 0.95rem;
+          min-height: 48px;
+          border-radius: 0.6rem;
+        }
+      }
+
+      /* ==========================
+         Invoice / Receipt / Contract
+         Improve readability and make whole document visible on small devices
+         ========================== */
+      /* Small phones (iPhone): condense printable content and portal cards */
+      @media (max-width: 420px) {
+        /* Printable documents (invoice/receipt/contract) */
+        .printable-area, .printable-content {
+          padding: 0.75rem !important;
+          font-size: 0.92rem !important;
+        }
+        .printable-content h1, .printable-content h2, .printable-content h3 { font-size: clamp(1rem, 2.5vw, 1.125rem) !important; }
+        .printable-content table, .printable-content thead, .printable-content tbody, .printable-content tr, .printable-content th, .printable-content td {
+          font-size: 0.88rem !important;
+        }
+        .printable-content img { max-width: 100% !important; height: auto !important; }
+        /* Contract dynamic HTML built with prose: allow full width and smaller type */
+        .prose, .prose-sm, .prose-invert { font-size: 0.95rem !important; line-height: 1.25 !important; }
+
+        /* Portal cards and headers */
+        .bg-portal-surface, .bg-brand-surface, .card, .rounded-2xl { padding: 0.85rem !important; border-radius: 0.6rem !important; }
+        h1, h2, h3, h4 { line-height: 1.15; }
+        .text-2xl { font-size: 1.1rem; }
+        .text-xl { font-size: 1rem; }
+        .text-lg { font-size: 0.96rem; }
+
+        /* Tighten spacing in tables used by invoices/receipts */
+        table.printable-table td, table.printable-table th, .printable-content table td, .printable-content table th { padding: 0.4rem 0.5rem !important; }
+
+        /* Make modal content use full viewport width for readability */
+  /* The app uses a centered modal with inner content area; ensure modal inner wrapper and content area expand on small screens */
+  .fixed.inset-0 > div, .modal-content-area, .printable-area { max-width: 100% !important; width: 100% !important; }
+      }
+
+      /* iPad: slightly larger, keep layout compact so documents fit */
+      @media (min-width: 768px) and (max-width: 1024px) {
+        .printable-area, .printable-content { padding: 1rem !important; font-size: 0.98rem !important; }
+        .prose, .prose-invert { font-size: 1rem !important; }
+        .bg-portal-surface, .bg-brand-surface, .card { padding: 1.1rem !important; border-radius: 0.75rem !important; }
+        .text-2xl { font-size: 1.35rem; }
+        .text-xl { font-size: 1.15rem; }
+        .text-lg { font-size: 1rem; }
+  table.printable-table td, table.printable-table th, .printable-content table td, .printable-content table th { padding: 0.6rem 0.75rem !important; }
+
+  /* iPad: allow horizontal scrolling for wide tables and ensure cells wrap if needed */
+  .printable-area, .printable-content { overflow-x: auto !important; }
+  .printable-content th, .printable-content td, .printable-area th, .printable-area td { white-space: normal !important; word-break: break-word !important; }
+
+  /* iPad: reduce invoice inner padding and ensure two-column layout for signature/summary instead of fixed 2/5 widths */
+  .printable-content .max-w-4xl { padding: 1rem !important; }
+  .printable-content .w-2\/5 { width: 48% !important; }
+  .printable-content section > .flex.justify-between { flex-direction: row !important; }
+
+        /* Keep sidebars hidden and allow the main content to use more width on iPad */
+        .sidebar { display: none; }
+        .main, main, .portal-bg .max-w-7xl { padding-left: 0; padding-right: 0; }
+      }
+
+      /* Desktop layout helpers */
+      @media (min-width: 1024px) {
+        .bottom-nav { display: none; }
+        .sidebar { display: block; }
+        .app-grid { display:grid; grid-template-columns: 260px 1fr; gap:1.5rem; align-items:start; }
+      }
+
+      /* Small helper to align icons and text */
+      .icon-text { display:flex; align-items:center; gap:0.5rem; }
+
+      /* Table spacing improvements */
+      .table th, .table td { padding: 0.5rem 0.75rem; }
+
+      /* Responsive images */
+      img.responsive { max-width:100%; height:auto; display:block; }
+
+      /* Improve hit target on touch devices */
+      .button-primary, .button-secondary, .card { touch-action: manipulation; }
+
       /* --- NEW PRINT STYLES --- */
       @media print {
         @page {
@@ -498,6 +925,127 @@
           page-break-after: avoid !important;
         }
       }
+      /* Floating-label behavior override (high-specificity, re-enables dynamic labels) */
+      /* Inputs get extra top padding so label can sit inside when not floated */
+      .input-field { padding-top: 1.05rem; }
+
+      /* Floating label core styles */
+      .input-group { position: relative; }
+      .input-label {
+        position: absolute;
+        left: 0.9rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.95rem;
+        color: var(--color-text-secondary);
+        pointer-events: none;
+        padding: 0 0.25rem;
+        background: transparent;
+        transition: transform 0.12s ease, font-size 0.12s ease, color 0.12s ease;
+        transform-origin: left top;
+        white-space: nowrap;
+      }
+
+      /* When input is focused or has value, float label up */
+      .input-group:focus-within .input-label,
+      .input-group.has-value .input-label {
+        transform: translateY(-1.6rem) scale(0.85);
+        color: var(--color-accent);
+        background: var(--color-surface);
+      }
+
+      /* Defensive CSS additions: handle mixed markup patterns and avoid visual overlap
+         when some components render the <label> before the <input> and others render
+         the input first. These rules are conservative and non-invasive. */
+
+      /* ensure predictable box-sizing for input-group children */
+      .input-group > * { box-sizing: border-box; }
+
+      /* If label is placed before the input, give the input extra top padding so
+         the absolute-positioned floating label won't cover the entered text. */
+      .input-group > .input-label + .input-field {
+        padding-top: 1.6rem; /* room for floating label */
+      }
+
+      /* Keep a baseline padding when input precedes label (input + label order) */
+      .input-group > .input-field + .input-label {
+        padding-top: 0;
+      }
+
+      /* Helpers should sit clearly below the input area */
+      .input-group .input-help {
+        display: block;
+        margin-top: 0.5rem;
+        color: var(--color-text-secondary);
+        font-size: 0.875rem;
+      }
+
+      /* Spacing for add-on / upload containers to avoid overlap */
+      .input-group .add-on-list,
+      .input-group .upload-area {
+        margin-top: 1.05rem;
+      }
+
+      /* Ensure floating label visually sits above input borders */
+      .input-group .input-label {
+        z-index: 2;
+        pointer-events: none; /* allow clicks through to the field */
+      }
+
+      /* Hide native placeholder when floating labels enabled */
+      .input-field::placeholder { color: transparent; }
+
+      /* Small screens: keep labels static above inputs for accessibility */
+      @media (max-width: 639px) {
+        .input-label { position: static !important; transform: none !important; top: auto !important; left: auto !important; white-space: normal; }
+        .input-field { padding-top: 0.75rem; }
+        .input-field::placeholder { color: var(--color-text-secondary); }
+      }
+
+      /* ===================================================================
+         FORCE LABELS ABOVE INPUTS (Global override)
+         Purpose: some components render <input/><label/> while others use
+         <label/><input/>. This block ensures labels are always displayed
+         above their related input fields across all pages and breakpoints.
+         It uses high-specificity and !important to override floating-label
+         rules defined earlier without editing individual components.
+         =================================================================== */
+      .input-group {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.25rem !important;
+        align-items: stretch !important;
+      }
+      .input-group .input-label {
+        position: static !important;
+        transform: none !important;
+        top: auto !important;
+        left: auto !important;
+        order: 0 !important;
+        margin: 0 !important;
+        margin-bottom: 0.12rem !important;
+        font-weight: 600 !important;
+        pointer-events: auto !important;
+        background: transparent !important;
+        white-space: normal !important;
+        color: var(--color-text-secondary) !important;
+      }
+      .input-group .input-field,
+      .input-group .add-on-list,
+      .input-group .upload-area {
+        order: 1 !important;
+      }
+      .input-group .input-help { order: 2 !important; }
+
+      /* Disable floating label transitions so label never overlaps input */
+      .input-group:focus-within .input-label,
+      .input-group.has-value .input-label {
+        transform: none !important;
+        color: var(--color-text-secondary) !important;
+        background: transparent !important;
+      }
+
+
     </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script type="importmap">
@@ -522,5 +1070,27 @@
   <body class="bg-brand-bg text-brand-text-primary">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
+    <script>
+      // Toggle .has-value on input-group when inputs have non-empty value
+      (function(){
+        const toggleGroup = (el) => {
+          const group = el.closest('.input-group');
+          if (!group) return;
+          if (el.value && el.value.toString().trim() !== '') group.classList.add('has-value'); else group.classList.remove('has-value');
+        };
+
+        document.addEventListener('input', (e)=>{
+          const target = e.target;
+          if (target && (target.matches('input.input-field') || target.matches('textarea.input-field') || target.matches('select.input-field'))) {
+            toggleGroup(target);
+          }
+        }, {capture:true});
+
+        // On page load, initialize existing values
+        document.addEventListener('DOMContentLoaded', ()=>{
+          document.querySelectorAll('.input-group .input-field').forEach(el => toggleGroup(el));
+        });
+      })();
+    </script>
   </body>
 </html>

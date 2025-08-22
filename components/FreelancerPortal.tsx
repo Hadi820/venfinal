@@ -33,7 +33,7 @@ const FreelancerPortal: React.FC<FreelancerPortalProps> = ({ accessId, teamMembe
     if (!freelancer) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-brand-bg p-4">
-                <div className="w-full max-w-lg p-8 text-center bg-brand-surface rounded-2xl shadow-lg">
+                <div className="w-full max-w-lg p-4 text-center bg-brand-surface rounded-2xl shadow-lg">
                     <h1 className="text-2xl font-bold text-brand-danger">Portal Tidak Ditemukan</h1>
                     <p className="mt-4 text-brand-text-primary">Tautan yang Anda gunakan tidak valid. Silakan hubungi admin.</p>
                 </div>
@@ -54,7 +54,7 @@ const FreelancerPortal: React.FC<FreelancerPortalProps> = ({ accessId, teamMembe
         const projectsBeingPaid = teamProjectPayments.filter(p => record.projectPaymentIds.includes(p.id));
     
         return (
-            <div id={`payment-slip-content-${record.id}`} className="printable-content bg-white text-black p-6 font-sans">
+            <div id={`payment-slip-content-${record.id}`} className="printable-content bg-white text-black p-2 sm:p-6 font-sans">
                 <header className="flex justify-between items-start pb-4 border-b border-slate-200">
                     <div><h2 className="text-2xl font-bold text-slate-800">SLIP PEMBAYARAN</h2><p className="text-sm text-slate-500">No: {record.recordNumber}</p></div>
                     <div className="text-right"><h3 className="font-bold text-lg text-slate-800">{profile.companyName}</h3></div>
@@ -92,7 +92,7 @@ const FreelancerPortal: React.FC<FreelancerPortalProps> = ({ accessId, teamMembe
                         <div className="text-center">
                             <p>Diverifikasi oleh,</p>
                              {record.vendorSignature ? (
-                                <img src={record.vendorSignature} alt="Tanda Tangan" className="h-20 object-contain my-2" />
+                                <img src={record.vendorSignature} alt="Tanda Tangan" className="h-20 object-contain my-2" loading="lazy" decoding="async" />
                             ) : (
                                 <div className="h-20 flex items-center justify-center my-2 italic text-gray-400">Belum Ditandatangani</div>
                             )}
@@ -399,7 +399,7 @@ const ProjectDetailModal: React.FC<{project: Project, freelancer: TeamMember, on
                     <div className="mt-3 pt-3 border-t border-brand-border">
                         <p className="text-sm font-semibold text-brand-text-light">Invoice (Ditandatangani)</p>
                         <div className="mt-2 flex items-center gap-4">
-                            <img src={project.invoiceSignature} alt="Invoice Signed" className="h-28 object-contain border rounded-md bg-white" />
+                            <img src={project.invoiceSignature} alt="Invoice Signed" className="h-28 object-contain border rounded-md bg-white" loading="lazy" decoding="async" />
                             <div className="flex flex-col gap-2">
                                 <a href={project.invoiceSignature} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-brand-accent hover:underline">Lihat penuh</a>
                                 <button type="button" onClick={() => window.open(project.invoiceSignature, '_blank')} className="button-secondary text-sm">Unduh / Buka</button>

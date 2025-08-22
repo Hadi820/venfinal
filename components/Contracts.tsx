@@ -246,19 +246,19 @@ const Contracts: React.FC<ContractsProps> = ({ contracts, contractCrud, clients,
         }
 
         const htmlContent = `
-            <div class="prose prose-sm prose-invert max-w-none" style="--tw-prose-body: var(--color-text-primary); --tw-prose-headings: var(--color-text-light); --tw-prose-bold: var(--color-text-light);">
+            <div class="prose prose-sm prose-invert max-w-full sm:max-w-6xl" style="--tw-prose-body: var(--color-text-primary); --tw-prose-headings: var(--color-text-light); --tw-prose-bold: var(--color-text-light);">
                 <h2 class="text-xl font-bold text-center !mb-1">SURAT PERJANJIAN KERJA SAMA</h2>
                 <h3 class="text-lg font-bold text-center !mb-6 !mt-0">JASA ${project.projectType.toUpperCase()}</h3>
                 <p>Pada hari ini, ${new Date(contract.signingDate).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}, bertempat di ${contract.signingLocation}, telah dibuat dan disepakati perjanjian kerja sama antara:</p>
 
                 <div class="my-4">
                     <p class="font-bold">PIHAK PERTAMA</p>
-                    <table class="not-prose text-sm">
+                    <table class="not-prose text-sm" style="width:100%; table-layout:auto;">
                         <tbody>
-                            <tr><td class="pr-4 align-top w-1/4 py-1">Nama</td><td class="py-1">: ${profile.authorizedSigner}</td></tr>
+                            <tr><td class="pr-4 align-top py-1" style="width:25%">Nama</td><td class="py-1">: ${profile.authorizedSigner}</td></tr>
                             <tr><td class="pr-4 align-top py-1">Jabatan</td><td class="py-1">: Pemilik Usaha</td></tr>
                             <tr><td class="pr-4 align-top py-1">Alamat</td><td class="py-1">: ${profile.address}</td></tr>
-                            <tr><td class="pr-4 align-top py-1">Nomor Telepon</td><td class="py-1">: ${profile.phone}</td></tr>
+                            <tr><td class="pr-4 align-top py-1">No. WhatsApp</td><td class="py-1">: ${profile.phone}</td></tr>
                             ${profile.idNumber ? `<tr><td class="pr-4 align-top py-1">Nomor Identitas</td><td class="py-1">: ${profile.idNumber}</td></tr>` : ''}
                         </tbody>
                     </table>
@@ -269,13 +269,13 @@ const Contracts: React.FC<ContractsProps> = ({ contracts, contractCrud, clients,
                     <p class="font-bold">PIHAK KEDUA</p>
                     <table class="not-prose text-sm">
                         <tbody>
-                            <tr><td class="pr-4 align-top w-1/4 py-1">Nama</td><td class="py-1">: ${contract.clientName1}</td></tr>
+                            <tr><td class="pr-4 align-top py-1" style="width:25%">Nama</td><td class="py-1">: ${contract.clientName1}</td></tr>
                             <tr><td class="pr-4 align-top py-1">Alamat</td><td class="py-1">: ${contract.clientAddress1}</td></tr>
-                            <tr><td class="pr-4 align-top py-1">Nomor Telepon</td><td class="py-1">: ${contract.clientPhone1}</td></tr>
+                            <tr><td class="pr-4 align-top py-1">No. WhatsApp</td><td class="py-1">: ${contract.clientPhone1}</td></tr>
                             ${contract.clientName2 ? `
                                 <tr><td class="pr-4 align-top py-1">Nama</td><td class="py-1">: ${contract.clientName2}</td></tr>
                                 <tr><td class="pr-4 align-top py-1">Alamat</td><td class="py-1">: ${contract.clientAddress2}</td></tr>
-                                <tr><td class="pr-4 align-top py-1">Nomor Telepon</td><td class="py-1">: ${contract.clientPhone2}</td></tr>
+                                <tr><td class="pr-4 align-top py-1">No. WhatsApp</td><td class="py-1">: ${contract.clientPhone2}</td></tr>
                             ` : ''}
                         </tbody>
                     </table>
@@ -293,20 +293,20 @@ const Contracts: React.FC<ContractsProps> = ({ contracts, contractCrud, clients,
                     <div><h4 class="font-bold text-center !my-3">PASAL 8: PENUTUP</h4><p>Demikian surat perjanjian ini dibuat dalam 2 (dua) rangkap bermaterai cukup dan mempunyai kekuatan hukum yang sama, ditandatangani dengan penuh kesadaran oleh kedua belah pihak.</p></div>
                 </div>
 
-                <table class="not-prose w-full mt-16 text-center">
+                <table class="not-prose w-full mt-16 text-center" style="table-layout:fixed; max-width:100%;">
                     <tbody>
                         <tr>
-                            <td class="w-1/2">
+                            <td class="w-1/3" style="width:33.333%;">
                                 <p class="font-bold">PIHAK PERTAMA</p>
                                 <div class="h-28 my-1 flex items-center justify-center">
-                                    ${contract.vendorSignature ? `<img src="${contract.vendorSignature}" alt="Tanda Tangan Vendor" class="h-24 object-contain" />` : `<div class="p-4 rounded-lg text-sm text-brand-text-secondary non-printable">Tanda Tangani di Sini</div><div class="print:hidden h-24"></div>`}
+                                    ${contract.vendorSignature ? `<img src="${contract.vendorSignature}" alt="Tanda Tangan Vendor" class="h-24 object-contain" loading="lazy" decoding="async" />` : `<div class="p-4 rounded-lg text-sm text-brand-text-secondary non-printable">Tanda Tangani di Sini</div><div class="print:hidden h-24"></div>`}
                                 </div>
                                 <p class="border-t-2 border-dotted w-4/5 mx-auto pt-1">(${profile.authorizedSigner})</p>
                             </td>
-                            <td class="w-1/2">
+                            <td class="w-1/3" style="width:33.333%;">
                                 <p class="font-bold">PIHAK KEDUA</p>
                                 <div class="h-28 my-1 flex items-center justify-center">
-                                    ${contract.clientSignature ? `<img src="${contract.clientSignature}" alt="Tanda Tangan Klien" class="h-24 object-contain" />` : `<span class="italic text-sm text-brand-text-secondary">Menunggu Tanda Tangan Klien</span>`}
+                                    ${contract.clientSignature ? `<img src="${contract.clientSignature}" alt="Tanda Tangan Klien" class="h-24 object-contain" loading="lazy" decoding="async" />` : `<span class="italic text-sm text-brand-text-secondary">Menunggu Tanda Tangan Klien</span>`}
                                 </div>
                                 <p class="border-t-2 border-dotted w-4/5 mx-auto pt-1">(${contract.clientName1}${contract.clientName2 ? ` & ${contract.clientName2}` : ''})</p>
                             </td>
@@ -393,12 +393,12 @@ const Contracts: React.FC<ContractsProps> = ({ contracts, contractCrud, clients,
                             <h4 className="text-base font-semibold text-gradient border-b border-brand-border pb-2 mt-6 mb-4">Detail Pihak Kedua (1)</h4>
                              <div className="input-group"><input type="text" name="clientName1" value={formData.clientName1} onChange={handleFormChange} className="input-field" placeholder=" "/><label className="input-label">Nama Klien 1</label></div>
                              <div className="input-group"><input type="text" name="clientAddress1" value={formData.clientAddress1} onChange={handleFormChange} className="input-field" placeholder=" "/><label className="input-label">Alamat Klien 1</label></div>
-                             <div className="input-group"><input type="text" name="clientPhone1" value={formData.clientPhone1} onChange={handleFormChange} className="input-field" placeholder=" "/><label className="input-label">Telepon Klien 1</label></div>
+                             <div className="input-group"><input type="text" name="clientPhone1" value={formData.clientPhone1} onChange={handleFormChange} className="input-field" placeholder=" "/><label className="input-label">No. WhatsApp Klien 1</label></div>
                             
                             <h4 className="text-base font-semibold text-gradient border-b border-brand-border pb-2 mt-6 mb-4">Detail Pihak Kedua (2) - Opsional</h4>
                              <div className="input-group"><input type="text" name="clientName2" value={formData.clientName2} onChange={handleFormChange} className="input-field" placeholder=" "/><label className="input-label">Nama Klien 2</label></div>
                              <div className="input-group"><input type="text" name="clientAddress2" value={formData.clientAddress2} onChange={handleFormChange} className="input-field" placeholder=" "/><label className="input-label">Alamat Klien 2</label></div>
-                             <div className="input-group"><input type="text" name="clientPhone2" value={formData.clientPhone2} onChange={handleFormChange} className="input-field" placeholder=" "/><label className="input-label">Telepon Klien 2</label></div>
+                             <div className="input-group"><input type="text" name="clientPhone2" value={formData.clientPhone2} onChange={handleFormChange} className="input-field" placeholder=" "/><label className="input-label">No. WhatsApp Klien 2</label></div>
                         </div>
                         <div>
                             <h4 className="text-base font-semibold text-gradient border-b border-brand-border pb-2 mb-4">Pasal 2: Lingkup Pekerjaan</h4>

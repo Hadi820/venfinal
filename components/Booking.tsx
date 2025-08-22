@@ -242,7 +242,7 @@ const Booking: React.FC<BookingProps> = ({ leads, clients, projects, packages, h
             </Modal>
             <Modal isOpen={!!viewingProofUrl} onClose={() => setViewingProofUrl(null)} title="Bukti Pembayaran">
                 {viewingProofUrl && (
-                    <img src={viewingProofUrl} alt="Bukti Pembayaran" className="w-full h-auto rounded-lg object-contain max-h-[70vh]" />
+                    <img src={viewingProofUrl} alt="Bukti Pembayaran" className="w-full h-auto rounded-lg object-contain max-h-[70vh]" loading="lazy" decoding="async" />
                 )}
             </Modal>
              <Modal isOpen={!!activeStatModal} onClose={() => setActiveStatModal(null)} title={

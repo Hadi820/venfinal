@@ -21,6 +21,7 @@ const getStatusColorClass = (status: LeadStatus) => {
 }
 
 const initialConversionFormState = {
+    // phone kept for backward compatibility in data model but forms use whatsapp as primary contact
     phone: '',
     whatsapp: '',
     email: '',
@@ -288,6 +289,16 @@ const Leads: React.FC<LeadsProps> = ({
         }
     };
 
+    const handleNextFromDiscussion = async (lead: Lead) => {
+        try {
+            await leadCrud.update(lead.id, { status: LeadStatus.FOLLOW_UP });
+            setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, status: LeadStatus.FOLLOW_UP } : l));
+            showNotification(`Prospek "${lead.name}" dipindahkan ke Menunggu Follow Up.`);
+        } catch (err) {
+            showNotification('Gagal memperbarui status prospek.');
+        }
+    };
+
     useEffect(() => {
         if (isShareProspectFormModalOpen) {
             const qrCodeContainer = document.getElementById('leads-prospect-form-qrcode');
@@ -547,12 +558,7 @@ const Leads: React.FC<LeadsProps> = ({
                     <button onClick={() => setIsShareProspectFormModalOpen(true)} className="button-secondary inline-flex items-center gap-2">
                         <Share2Icon className="w-4 h-4" /> Bagikan Form Prospek
                     </button>
-                    <button onClick={handleSharePackagePage} className="button-secondary inline-flex items-center gap-2">
-                        <Share2Icon className="w-4 h-4" /> Bagikan Halaman Paket
-                    </button>
-                    <button onClick={handleShareToSpecificWhatsApp} className="button-secondary inline-flex items-center gap-2">
-                        <SendIcon className="w-4 h-4" /> Bagikan via WhatsApp
-                    </button>
+                    
                     <button onClick={() => setIsAddModalOpen(true)} className="button-primary inline-flex items-center gap-2"><PlusIcon className="w-5 h-5" /> Tambah Manual</button>
                 </div>
             </PageHeader>
@@ -627,6 +633,13 @@ const Leads: React.FC<LeadsProps> = ({
                                                     title="Bagikan Halaman Paket via WhatsApp"
                                                 >
                                                     Bagikan Halaman Paket <SendIcon className="w-4 h-4"/>
+                                                </button>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); handleNextFromDiscussion(lead); }}
+                                                    className="text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 px-2 py-1 rounded inline-flex items-center gap-1"
+                                                    title="Pindah ke Menunggu Follow Up"
+                                                >
+                                                    Next
                                                 </button>
                                             </div>
                                         )}
@@ -765,9 +778,10 @@ const Leads: React.FC<LeadsProps> = ({
                             {/* Left Column */}
                             <div className="space-y-4">
                                 <h4 className="text-base font-semibold text-gradient border-b border-brand-border pb-2">Detail Kontak & Proyek</h4>
-                                <div className="input-group"><input type="tel" id="phone" name="phone" value={conversionForm.phone} onChange={handleConversionFormChange} className="input-field" placeholder=" " required/><label htmlFor="phone" className="input-label">Nomor Telepon</label></div>
+                                {/* Use WhatsApp as primary contact field */}
                                 <div className="input-group"><input type="tel" id="whatsapp" name="whatsapp" value={conversionForm.whatsapp} onChange={handleConversionFormChange} className="input-field" placeholder=" " /><label htmlFor="whatsapp" className="input-label">No. WhatsApp</label></div>
-                                <div className="input-group"><input type="email" id="email" name="email" value={conversionForm.email} onChange={handleConversionFormChange} className="input-field" placeholder=" " required/><label htmlFor="email" className="input-label">Email</label></div>
+                                <div className="input-group"><input type="tel" id="whatsapp" name="whatsapp" value={conversionForm.whatsapp} onChange={handleConversionFormChange} className="input-field" placeholder=" " /><label htmlFor="whatsapp" className="input-label">No. WhatsApp</label></div>
+                                <div className="input-group"><input type="email" id="email" name="email" value={conversionForm.email} onChange={handleConversionFormChange} className="input-field" placeholder=" " /><label htmlFor="email" className="input-label">Email (Opsional)</label></div>
                                 <div className="input-group"><input type="text" id="projectName" name="projectName" value={conversionForm.projectName} onChange={handleConversionFormChange} className="input-field" placeholder=" " required/><label htmlFor="projectName" className="input-label">Nama Proyek</label></div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="input-group"><select id="projectType" name="projectType" value={conversionForm.projectType} onChange={handleConversionFormChange} className="input-field" required><option value="" disabled>Pilih Jenis...</option>{userProfile.projectTypes.map(pt => <option key={pt} value={pt}>{pt}</option>)}</select><label htmlFor="projectType" className="input-label">Jenis Proyek</label></div>
@@ -779,7 +793,7 @@ const Leads: React.FC<LeadsProps> = ({
                              <div className="space-y-4">
                                 <h4 className="text-base font-semibold text-gradient border-b border-brand-border pb-2">Paket & Pembayaran</h4>
                                 <div className="input-group"><select id="packageId" name="packageId" value={conversionForm.packageId} onChange={handleConversionFormChange} className="input-field" required><option value="">Pilih paket...</option>{packages.map(p => <option key={p.id} value={p.id}>{p.name} - {formatCurrency(p.price)}</option>)}</select><label htmlFor="packageId" className="input-label">Paket</label></div>
-                                <div className="input-group"><label className="input-label !static !-top-4 !text-brand-accent">Add-On</label><div className="p-2 border border-brand-border bg-brand-bg rounded-lg max-h-24 overflow-y-auto space-y-1 mt-2">{addOns.map(addon => (<label key={addon.id} className="flex items-center justify-between p-1 rounded-md hover:bg-brand-input cursor-pointer"><span className="text-sm">{addon.name}</span><input type="checkbox" id={addon.id} name="addOns" checked={conversionForm.selectedAddOnIds.includes(addon.id)} onChange={handleConversionFormChange} /></label>))}</div></div>
+                                <div className="input-group"><label className="input-label text-brand-accent">Add-On</label><div className="p-2 border border-brand-border bg-brand-bg rounded-lg max-h-24 overflow-y-auto space-y-1 mt-2">{addOns.map(addon => (<label key={addon.id} className="flex items-center justify-between p-1 rounded-md hover:bg-brand-input cursor-pointer"><span className="text-sm">{addon.name}</span><input type="checkbox" id={addon.id} name="addOns" checked={conversionForm.selectedAddOnIds.includes(addon.id)} onChange={handleConversionFormChange} /></label>))}</div></div>
                                 <div className="input-group"><select id="promoCodeId" name="promoCodeId" value={conversionForm.promoCodeId} onChange={handleConversionFormChange} className="input-field"><option value="">Tanpa Kode Promo</option>{promoCodes.filter(p => p.isActive).map(p => (<option key={p.id} value={p.id}>{p.code} - ({p.discountType === 'percentage' ? `${p.discountValue}%` : formatCurrency(p.discountValue)})</option>))}</select><label htmlFor="promoCodeId" className="input-label">Kode Promo</label></div>
                                 <div className="input-group"><input type="number" name="dp" id="dp" value={conversionForm.dp} onChange={handleConversionFormChange} className="input-field" placeholder=" "/><label htmlFor="dp" className="input-label">Uang DP</label></div>
                                 {conversionForm.dp > 0 && (<div className="input-group"><select name="dpDestinationCardId" value={conversionForm.dpDestinationCardId} onChange={handleConversionFormChange} className="input-field" required><option value="">Setor DP ke...</option>{cards.map(c => <option key={c.id} value={c.id}>{c.bankName} **** {c.lastFourDigits}</option>)}</select><label htmlFor="dpDestinationCardId" className="input-label">Kartu Tujuan</label></div>)}

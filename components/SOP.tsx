@@ -149,19 +149,19 @@ const SOPManagement: React.FC<SOPProps> = ({ sops, sopCrud, profile, showNotific
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="input-group">
-                                <input type="text" id="title" name="title" value={formData.title} onChange={handleFormChange} className="input-field" placeholder=" " required />
                                 <label htmlFor="title" className="input-label">Judul SOP</label>
+                                <input type="text" id="title" name="title" value={formData.title} onChange={handleFormChange} className="input-field" placeholder=" " required />
                             </div>
                             <div className="input-group">
+                                <label htmlFor="category" className="input-label">Kategori</label>
                                 <select id="category" name="category" value={formData.category} onChange={handleFormChange} className="input-field" required>
                                     {profile.sopCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                                 </select>
-                                <label htmlFor="category" className="input-label">Kategori</label>
                             </div>
                         </div>
                         <div className="input-group">
-                            <textarea id="content" name="content" value={formData.content} onChange={handleFormChange} className="input-field" placeholder=" " rows={15} required></textarea>
                             <label htmlFor="content" className="input-label">Konten SOP (mendukung Markdown)</label>
+                            <textarea id="content" name="content" value={formData.content} onChange={handleFormChange} className="input-field" placeholder=" " rows={15} required></textarea>
                         </div>
                         <div className="flex justify-end gap-3 pt-4 border-t border-brand-border">
                             <button type="button" onClick={handleCloseModal} className="button-secondary">Batal</button>

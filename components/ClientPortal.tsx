@@ -507,7 +507,7 @@ const DocumentViewerModal: React.FC<{viewingDocument: any, onClose: any, profile
             return (
                 <div id="invoice-content" className="p-1">
                     <div className="printable-content bg-slate-50 font-sans text-slate-800 printable-area">
-                        <div className="max-w-4xl mx-auto bg-white p-8 sm:p-12 shadow-lg">
+                        <div className="max-w-full sm:max-w-6xl mx-auto bg-white p-4 sm:p-12 shadow-lg">
                             <header className="flex justify-between items-start mb-12">
                                 <div>
                                     <h1 className="text-3xl font-extrabold text-slate-900">{profile.companyName}</h1>
@@ -537,8 +537,8 @@ const DocumentViewerModal: React.FC<{viewingDocument: any, onClose: any, profile
 
                             <section className="mt-12">
                                 <div className="flex justify-between">
-                                    <div className="w-2/5"><h4 className="font-semibold text-slate-600">Tanda Tangan</h4>{project.invoiceSignature ? (<img src={project.invoiceSignature} alt="Tanda Tangan" className="h-20 mt-2 object-contain" />) : (<div className="h-20 mt-2 flex items-center justify-center text-xs text-slate-400 italic border border-dashed rounded-lg">Belum Ditandatangani</div>)}</div>
-                                    <div className="w-2/5 space-y-2 text-sm">
+                                    <div className="sm:w-1/3 w-full"><h4 className="font-semibold text-slate-600">Tanda Tangan</h4>{project.invoiceSignature ? (<img src={project.invoiceSignature} alt="Tanda Tangan" className="h-20 mt-2 object-contain" loading="lazy" decoding="async" />) : (<div className="h-20 mt-2 flex items-center justify-center text-xs text-slate-400 italic border border-dashed rounded-lg">Belum Ditandatangani</div>)}</div>
+                                        <div className="sm:w-1/3 w-full space-y-2 text-sm">
                                         <div className="flex justify-between"><span className="text-slate-500">Subtotal</span><span className="font-semibold text-slate-800">{formatCurrency(project.totalCost)}</span></div>
                                         {project.discountAmount && project.discountAmount > 0 && (<div className="flex justify-between"><span className="text-slate-500">Diskon</span><span className="font-semibold text-green-600 print-text-green">-{formatCurrency(project.discountAmount)}</span></div>)}
                                         <div className="flex justify-between"><span className="text-slate-500">Telah Dibayar</span><span className="font-semibold text-slate-800">-{formatCurrency(project.amountPaid)}</span></div>
@@ -557,12 +557,12 @@ const DocumentViewerModal: React.FC<{viewingDocument: any, onClose: any, profile
             return (
                 <div id="receipt-content" className="p-1">
                      <div className="printable-content bg-slate-50 font-sans text-slate-800 printable-area">
-                        <div className="max-w-md mx-auto bg-white p-8 shadow-lg rounded-xl">
+                        <div className="max-w-full sm:max-w-lg mx-auto bg-white p-4 sm:p-8 shadow-lg rounded-xl">
                             <header className="text-center mb-8"><h1 className="text-2xl font-bold text-slate-900">KWITANSI PEMBAYARAN</h1><p className="text-sm text-slate-500">{profile.companyName}</p></header>
                             <div className="p-4 bg-green-500/10 border border-green-200 rounded-lg text-center mb-8 printable-bg-green-light"><p className="text-sm font-semibold text-green-700 print-text-green">PEMBAYARAN DITERIMA</p><p className="text-3xl font-bold text-green-800 print-text-green mt-1">{formatCurrency(transaction.amount)}</p></div>
                             <div className="space-y-3 text-sm"><div className="flex justify-between"><span className="text-slate-500">No. Kwitansi</span><span className="font-semibold text-slate-700 font-mono">{transaction.id.slice(0,12)}</span></div><div className="flex justify-between"><span className="text-slate-500">Tanggal Bayar</span><span className="font-semibold text-slate-700">{formatDate(transaction.date)}</span></div><div className="flex justify-between"><span className="text-slate-500">Diterima dari</span><span className="font-semibold text-slate-700">{client.name}</span></div><div className="flex justify-between"><span className="text-slate-500">Metode</span><span className="font-semibold text-slate-700">{transaction.method}</span></div></div>
                             <div className="mt-6 pt-6 border-t border-slate-200"><p className="text-sm text-slate-500">Untuk pembayaran:</p><p className="font-semibold text-slate-800 mt-1">{transaction.description}</p>{project && (<div className="mt-2 text-xs text-slate-500"><p>Proyek: {project.projectName}</p><p>Total Tagihan: {formatCurrency(project.totalCost)} | Sisa: {formatCurrency(project.totalCost - project.amountPaid)}</p></div>)}</div>
-                            <footer className="mt-12 flex justify-between items-end"><p className="text-xs text-slate-400">Terima kasih.</p><div className="text-center">{transaction.vendorSignature ? (<img src={transaction.vendorSignature} alt="Tanda Tangan" className="h-16 object-contain" />) : (<div className="h-16 flex items-center justify-center text-xs text-slate-400 italic border-b border-dashed">Belum Ditandatangani</div>)}<p className="text-xs font-semibold text-slate-600 mt-1">({profile.authorizedSigner || profile.companyName})</p></div></footer>
+                            <footer className="mt-12 flex justify-between items-end"><p className="text-xs text-slate-400">Terima kasih.</p><div className="text-center">{transaction.vendorSignature ? (<img src={transaction.vendorSignature} alt="Tanda Tangan" className="h-16 object-contain" loading="lazy" decoding="async" />) : (<div className="h-16 flex items-center justify-center text-xs text-slate-400 italic border-b border-dashed">Belum Ditandatangani</div>)}<p className="text-xs font-semibold text-slate-600 mt-1">({profile.authorizedSigner || profile.companyName})</p></div></footer>
                         </div>
                     </div>
                 </div>
@@ -577,7 +577,7 @@ const DocumentViewerModal: React.FC<{viewingDocument: any, onClose: any, profile
                 );
             }
              return (
-                <div className="printable-content bg-white text-black p-8 font-serif leading-relaxed text-sm">
+                <div className="printable-content bg-white text-black p-4 sm:p-8 font-serif leading-relaxed text-sm">
                     <h2 className="text-xl font-bold text-center mb-1">SURAT PERJANJIAN KERJA SAMA</h2>
                     <h3 className="text-lg font-bold text-center mb-6">JASA {project.projectType.toUpperCase()}</h3>
                     <p>Pada hari ini, {formatDate(contract.signingDate)}, bertempat di {contract.signingLocation}, telah dibuat dan disepakati perjanjian kerja sama antara:</p>
@@ -589,7 +589,7 @@ const DocumentViewerModal: React.FC<{viewingDocument: any, onClose: any, profile
                                 <tr><td className="pr-4 align-top">Nama</td><td>: {profile.authorizedSigner}</td></tr>
                                 <tr><td className="pr-4 align-top">Jabatan</td><td>: Pemilik Usaha</td></tr>
                                 <tr><td className="pr-4 align-top">Alamat</td><td>: {profile.address}</td></tr>
-                                <tr><td className="pr-4 align-top">Nomor Telepon</td><td>: {profile.phone}</td></tr>
+                                <tr><td className="pr-4 align-top">No. WhatsApp</td><td>: {profile.phone}</td></tr>
                                 {profile.idNumber && <tr><td className="pr-4 align-top">Nomor Identitas</td><td>: {profile.idNumber}</td></tr>}
                             </tbody>
                         </table>
@@ -602,11 +602,11 @@ const DocumentViewerModal: React.FC<{viewingDocument: any, onClose: any, profile
                             <tbody>
                                 <tr><td className="pr-4 align-top">Nama</td><td>: {contract.clientName1}</td></tr>
                                 <tr><td className="pr-4 align-top">Alamat</td><td>: {contract.clientAddress1}</td></tr>
-                                <tr><td className="pr-4 align-top">Nomor Telepon</td><td>: {contract.clientPhone1}</td></tr>
+                                <tr><td className="pr-4 align-top">No. WhatsApp</td><td>: {contract.clientPhone1}</td></tr>
                                 {contract.clientName2 && <>
                                     <tr><td className="pr-4 align-top">Nama</td><td>: {contract.clientName2}</td></tr>
                                     <tr><td className="pr-4 align-top">Alamat</td><td>: {contract.clientAddress2}</td></tr>
-                                    <tr><td className="pr-4 align-top">Nomor Telepon</td><td>: {contract.clientPhone2}</td></tr>
+                                    <tr><td className="pr-4 align-top">No. WhatsApp</td><td>: {contract.clientPhone2}</td></tr>
                                 </>}
                             </tbody>
                         </table>
@@ -624,19 +624,19 @@ const DocumentViewerModal: React.FC<{viewingDocument: any, onClose: any, profile
                         <div><h4 className="font-bold text-center my-3">PASAL 8: PENUTUP</h4><p>Demikian surat perjanjian ini dibuat dalam 2 (dua) rangkap bermaterai cukup dan mempunyai kekuatan hukum yang sama, ditandatangani dengan penuh kesadaran oleh kedua belah pihak.</p></div>
                     </div>
 
-                    <div className="flex justify-between items-end mt-16">
-                        <div className="text-center w-2/5">
+                    <div className="flex flex-col sm:flex-row justify-between items-end mt-16">
+                        <div className="text-center sm:w-2/5 w-full">
                             <p>PIHAK PERTAMA</p>
                             <div className="h-28 my-1 flex flex-col items-center justify-center text-gray-400 text-xs">
-                                {contract.vendorSignature ? <img src={contract.vendorSignature} alt="Tanda Tangan Vendor" className="h-24 object-contain" /> : <span className="italic">(Menunggu TTD Vendor)</span>}
+                                {contract.vendorSignature ? <img src={contract.vendorSignature} alt="Tanda Tangan Vendor" className="h-24 object-contain" loading="lazy" decoding="async" /> : <span className="italic">(Menunggu TTD Vendor)</span>}
                             </div>
                             <p className="border-t-2 border-dotted w-4/5 mx-auto pt-1">({profile.authorizedSigner})</p>
                         </div>
-                         <div className="text-center w-2/5">
+                         <div className="text-center sm:w-2/5 w-full">
                             <p>PIHAK KEDUA</p>
                             <div className="h-28 w-full mx-auto my-1 flex items-center justify-center text-gray-400 text-xs italic">
                                 {contract.clientSignature ? (
-                                    <img src={contract.clientSignature} alt="Tanda Tangan Klien" className="h-24 object-contain" />
+                                    <img src={contract.clientSignature} alt="Tanda Tangan Klien" className="h-24 object-contain" loading="lazy" decoding="async" />
                                 ) : (
                                     <span className="italic">Belum Ditandatangani</span>
                                 )}

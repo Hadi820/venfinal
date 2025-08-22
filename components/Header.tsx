@@ -82,6 +82,7 @@ const Header: React.FC<HeaderProps> = ({ pageTitle, toggleSidebar, setIsSearchOp
 
     return (
         <header id="app-header" className="flex-shrink-0 bg-brand-surface flex items-center justify-between h-20 px-4 sm:px-6 lg:px-8 border-b border-brand-border">
+            <div className="container flex items-center justify-between w-full">
             <div className="flex items-center">
                 <button
                     onClick={toggleSidebar}
@@ -162,6 +163,7 @@ const Header: React.FC<HeaderProps> = ({ pageTitle, toggleSidebar, setIsSearchOp
                         </div>
                     )}
                 </div>
+            </div>
             </div>
             <style>{`
                 @keyframes fadeInDown {
